@@ -1,0 +1,115 @@
+* week 1
+** lect 0
+*** FP is a style of programming in which expressions are more important than statements
+*** we use expressions to compose and create bigger expressions
+*** no mutation of a global state
+*** lambda calculus by alonzo church
+** lect 1
+*** ghci
+* week 2 Types and classes
+** Types: collection of related values
+** Type errors
+** language can have
+*** static typing: haskell
+*** dynamic typing: ruby
+*** no typing: javascript
+** type inference
+** basic types
+*** Int : fixed precision
+*** Integer: arbitrary precision
+** List : same type arbitrary length
+** Tuple : different types definite length
+** curried functions
+** polymorphic functions
+* week 3: Defining functions
+** conditional expressions vs conditional statements
+*** haskell has conditional expressions
+**** need to have both if and else part like ternary expressions
+*** java has conditional statements
+** guarded equations
+*** starts with an expression
+** pattern matching
+*** top -> botoom and left -> right
+*** cannot repeat variables
+*** x:xs must be (x:xs) because application has priority over :
+** lamdba expressions
+*** are expressions that denote functions
+*** makes intent more clear
+*** e.g without lambda
+const :: a -> b -> a
+const x _ = x
+*** with lamddas
+const :: a -> (b -> a)
+const x = \ _ -> x
+** sections
+*** converts an infix operator to a curried function
+*** e.g 1+2 =====> (+) 1 2
+*** makes possible
+**** (1+) 2
+**** (+2) 1
+**** 1 + 2
+*** in general if ø is a binary operator, the
+**** a ø b, (a ø) b and (ø b) a are possible
+* week 4: List comprehensions
+** helps write functions that manipulate lists
+** e.g. [x^2 | x <- [1..5]]
+*** x <- [1..5] is called generator
+*** comprehension can have multiple generators
+**** [(x,y) | x <- [1..3], y <-[4..5]],
+***** y is the inner loop
+***** x is outer loop
+***** this depends upon order of generators but not the expression
+*** dependent generators
+**** later generators can use the variables introduced by earlier generators
+**** [(x,y)| x <- [1..3], y <- [x..5]]
+*** guards are filters
+**** [x | x <- [1..10], even x]
+**** 
+* week 5: HOF
+** usefulness
+*** common idioms  can be abstracted out
+*** easy to define a DSL
+*** algebaric properties of functions can be used to reason a about the behavior
+** foldr is a homomorphism over list, i.e. structure of list is maintained
+*** e.g. sum [1,2,3]
+foldr (+) 0 [1,2,3]
+foldr (+) 0 (1:(2:(3:[])))
+replace each : with + and [] with 0
+(1+(2+(3+0)))
+*** is similiar to visitor pattern
+*** usefulness
+**** function properties can be proved using algebaric properties of foldr
+**** fusion and banana split
+**** advanced optimizations can be done
+** functional composition
+(.) :: (b ->c) -> (a -> b) -> (a -> c)
+f.g = \x -> f (g x)
+*** f.g = f after g
+* week 7 Functional Parsers and Monads
+** parser : a program that analyzes a piece of text to determine its syntactic structure
+** functor
+*** fmap :: (a -> b) -> f a -> f b
+*** it is a computational context
+* week 9 Declaring Types and classes
+** alias
+*** type String = [Char]
+*** type Pair a = (a,a)
+*** *can be nested, but not recursive*
+** Types
+*** data Bool = True|False
+**** Bool is siiliar to an abstract class or trait
+**** True or False are sub-types classes, they are called data constructors
+**** Type and constructors must begin with upper case
+* week 11 Lazy evaluation
+
+ |-------------------+---------------------------------------------------------------+--------------------------------------|
+ | *facts            | innermost reduction                                           | outermost reduction*                 |
+ |-------------------+---------------------------------------------------------------+--------------------------------------|
+ |                   | may not always terminate                                      | may terminate where innermost cannot |
+ |-------------------+---------------------------------------------------------------+--------------------------------------|
+ | if both terminate | same result                                                   | result                               |
+ |-------------------+---------------------------------------------------------------+--------------------------------------|
+ |                   | more efficient as comapred to outermost, less number of steps |                                      |
+** sharing of expressions
+*** square (3+4) ====> (p * p), where p --> (3+4) ====> (p * p), where p = 7
+** Lazy evaluation = outermost reduction + sharing
