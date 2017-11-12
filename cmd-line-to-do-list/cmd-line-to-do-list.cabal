@@ -17,7 +17,6 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
   build-depends:       base >= 4.7 && < 5
-                       ,optparse-applicative
   default-language:    Haskell2010
 
 executable cmd-line-to-do-list-exe
@@ -25,8 +24,16 @@ executable cmd-line-to-do-list-exe
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , optparse-applicative  
+                     , MissingH
+                     , aeson
+                     , bytestring
                      , cmd-line-to-do-list
+                     , directory
+                     , optparse-applicative  
+                     , strict              
+                     , text
+                     , time
+                     , yaml
   default-language:    Haskell2010
 
 test-suite cmd-line-to-do-list-test
