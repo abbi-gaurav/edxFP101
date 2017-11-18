@@ -4,14 +4,17 @@
 module Main (main) where
 
 import           Control.Exception
+import           Control.Monad
 import           Data.Aeson
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Lazy.Char8 as BSL
+import           Data.List.Safe ((!!))
 import           Data.String.Utils
 import           Data.Time
 import qualified Data.Yaml as Yaml
 import           GHC.Generics
 import           Options.Applicative hiding(infoParser)
+import           Prelude hiding ((!!))
 import           System.Directory
 import           System.IO.Error
 
@@ -177,23 +180,33 @@ main = do
   Options dataPath command <- execParser(info (optionsParser)(progDesc "To-do list manager"))
   homeDir <- getHomeDirectory
   let expandedDataPath = replace "~" homeDir dataPath
-  let dueBy = LocalTime (ModifiedJulianDay 0) (TimeOfDay 0 0 0)
-  writeToDoList expandedDataPath $ ToDoList
-    [ Item "t1" (Just "d1") (Just Normal) (Just dueBy)
-    , Item "t1" (Just "d1") (Just Normal) (Just dueBy)
-    ]
-  todoList <- readToDoList expandedDataPath
-  print todoList
+  run expandedDataPath command
+
 run :: FilePath -> Command -> IO()
-run dataPath Info = putStrLn "Info"
-run dataPath Init = putStrLn "Init"
-run dataPath List = putStrLn "List"
-run dataPath (Add item) = putStrLn $ "Add: " ++ show item
-run dataPath (View index) = putStrLn $ "View idx: " ++ show index
-run dataPath (Update idx itemUpdate) = putStrLn $ "Update : idx " ++ show idx ++ " item to update : " ++ show itemUpdate 
-run dataPath (Remove idx) = putStrLn $ "Remove idx: " ++ show idx
+run dataPath Info = showInfo dataPath
+run dataPath Init = initItems dataPath
+run dataPath List = viewItems dataPath
+run dataPath (Add item) = addItem dataPath item
+run dataPath (View index) = viewItem dataPath index
+run dataPath (Update idx itemUpdate) = updateItem dataPath idx itemUpdate
+run dataPath (Remove idx) = removeItem dataPath idx
 
+showInfo :: FilePath -> IO()
+showInfo dataPath = do
+  putStrLn $ "Data file path " ++ dataPath
+  exists <- doesFileExist dataPath
+  if exists
+    then do
+    s <- BS.readFile dataPath
+    let mbToDoList = Yaml.decode s
+    case mbToDoList of
+      Nothing -> putStrLn "Status: file is invalid"
+      Just (ToDoList items) -> putStrLn $ "Status: contains " ++ show(length items) ++ " items"
+    else putStrLn "File does not exist"
 
+initItems :: FilePath -> IO()
+initItems dataPath = writeToDoList dataPath (ToDoList [])
+    
 writeToDoList :: FilePath -> ToDoList -> IO ()
 writeToDoList dataPath todoList = BS.writeFile dataPath (Yaml.encode todoList)
 
@@ -206,3 +219,82 @@ readToDoList dataPath = do
   case mbToDoList of
     Nothing -> error "YAML is corrupt"
     Just todoList -> return todoList
+
+viewItem :: FilePath -> ItemIndex -> IO()
+viewItem dataPath index = do
+  ToDoList items <- readToDoList dataPath
+  let mbItem = items !! index
+  case mbItem of
+    Nothing -> putStrLn "Invalid item index"
+    Just item -> showItem index item
+
+showItem :: ItemIndex -> Item -> IO()
+showItem idx (Item title mbDescription mbPriority mbDueby) = do
+  putStrLn $ "[" ++ show idx ++ "] " ++ title
+  putStr " Description: "
+  putStrLn $ showField id mbDescription
+  putStr " Priority: "
+  putStrLn $ showField show mbPriority
+  putStr " Due by: "
+  putStrLn $ showField (formatTime defaultTimeLocale "%Y/%m/%d %H:%M:%S") mbDueby
+
+showField :: (a -> String) -> Maybe a -> String
+showField f (Just x) = f x
+showField _ Nothing = "not set"
+
+addItem :: FilePath -> Item -> IO()
+addItem dataPath item = do
+  ToDoList items <- readToDoList dataPath
+  let newTodoList = ToDoList(item : items)
+  writeToDoList dataPath newTodoList
+
+removeItem :: FilePath -> ItemIndex -> IO()
+removeItem dataPath index = do
+  ToDoList items <- readToDoList dataPath
+  let mbItems = items `removeAt` index
+  case mbItems of
+    Nothing -> putStrLn "invalid item index"
+    Just items' -> writeToDoList dataPath (ToDoList items')
+
+updateItem :: FilePath -> ItemIndex -> ItemUpdate -> IO()
+updateItem dataPath index (ItemUpdate mbTitle mbDesc mbPriority mbDueby) = do
+  ToDoList items <- readToDoList dataPath
+  let update (Item title desc priority dueBy) = Item
+        (updateField mbTitle title)
+        (updateField mbDesc desc)
+        (updateField mbPriority priority)
+        (updateField mbDueby dueBy)
+      updateField (Just value) _ = value
+      updateField Nothing value = value
+      mbItems = updateAt items index update
+  case mbItems of
+    Nothing -> putStrLn "invalid item index"
+    Just items' -> writeToDoList dataPath (ToDoList items')
+
+removeAt :: [a] -> Int -> Maybe [a]
+removeAt list idx = case list !! idx of
+                      Nothing -> Nothing
+                      _ -> Just (delNth idx list)
+
+updateAt :: [a] -> Int -> (a->a) -> Maybe [a]
+updateAt list idx f = case list !! idx of
+                        Nothing -> Nothing
+                        _ -> Just (updateNth idx f list)
+
+delNth :: Int -> [a] -> [a]
+delNth _ [] = []
+delNth idx (x:xs)
+  | idx == 0  = xs
+  | otherwise = x : delNth (idx -1) xs
+
+updateNth :: Int -> (a -> a) -> [a] -> [a]
+updateNth _ _ [] = []
+updateNth idx f (x:xs)
+  | idx == 0  = (f(x) : xs)
+  | otherwise = x : updateNth (idx-1) f xs
+
+viewItems :: FilePath -> IO()
+viewItems dataPath = do
+  ToDoList items <- readToDoList dataPath
+  let z = zip [0..] items
+  forM_ z (\(idx, item) -> showItem idx item)

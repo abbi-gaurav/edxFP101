@@ -29,6 +29,7 @@ executable cmd-line-to-do-list-exe
                      , bytestring
                      , cmd-line-to-do-list
                      , directory
+                     , listsafe
                      , optparse-applicative  
                      , strict              
                      , text
