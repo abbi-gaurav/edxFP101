@@ -15,8 +15,20 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     Commands
+                     , Helpers
+                     , Lib
+                     , Parsers
+                     , Types
   build-depends:       base >= 4.7 && < 5
+                     , aeson
+                     , bytestring
+                     , directory
+                     , listsafe
+                     , MissingH
+                     , optparse-applicative
+                     , time
+                     , yaml
   default-language:    Haskell2010
 
 executable cmd-line-to-do-list-exe
@@ -25,16 +37,9 @@ executable cmd-line-to-do-list-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , MissingH
-                     , aeson
-                     , bytestring
                      , cmd-line-to-do-list
                      , directory
-                     , listsafe
                      , optparse-applicative  
-                     , strict              
-                     , text
-                     , time
-                     , yaml
   default-language:    Haskell2010
 
 test-suite cmd-line-to-do-list-test

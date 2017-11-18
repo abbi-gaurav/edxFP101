@@ -1,0 +1,3 @@
+* Haskell Programming from first principles
+* haskell book
+* Real world haskell
