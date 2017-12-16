@@ -3,51 +3,71 @@
 
 module Types where
 
-import           Data.Aeson
-import           GHC.Generics
-import           Data.Time
+import Data.Aeson
+import Data.Time
+import GHC.Generics
 
 defaultDataPath :: FilePath
 defaultDataPath = "~/.to-do.yaml"
 
 type ItemIndex = Int
+
 type ItemTitle = String
+
 type ItemDescription = Maybe String
+
 type ItemDueBy = Maybe LocalTime
+
 type ItemPriority = Maybe Priority
 
-data ToDoList = ToDoList [Item] deriving (Generic, Show)
+data ToDoList =
+  ToDoList [Item]
+  deriving (Generic, Show)
+
 instance ToJSON ToDoList
+
 instance FromJSON ToDoList
 
-data Item = Item {
-  title :: ItemTitle
+data Item = Item
+  { title :: ItemTitle
   , description :: ItemDescription
   , priority :: ItemPriority
-  , dueBy ::  ItemDueBy
+  , dueBy :: ItemDueBy
   } deriving (Generic, Show)
+
 instance ToJSON Item
+
 instance FromJSON Item
 
-data Priority = Low | Normal | High deriving (Generic, Show)
+data Priority
+  = Low
+  | Normal
+  | High
+  deriving (Generic, Show)
+
 instance ToJSON Priority
+
 instance FromJSON Priority
 
-data ItemUpdate = ItemUpdate {
-  titleUpdate :: Maybe ItemTitle
+data ItemUpdate = ItemUpdate
+  { titleUpdate :: Maybe ItemTitle
   , descriptionUpdate :: Maybe ItemDescription
   , priorityUpdate :: Maybe ItemPriority
   , dueByUpdate :: Maybe ItemDueBy
-  } deriving Show
+  } deriving (Show)
 
-data Command =
-  Info
+data Command
+  = Info
   | Init
   | List
   | Add Item
   | View ItemIndex
-  | Update ItemIndex ItemUpdate
+  | Update ItemIndex
+           ItemUpdate
   | Remove ItemIndex
-  deriving Show
+  deriving (Show)
 
-data Options = Options FilePath Command deriving Show
+data Options =
+  Options FilePath
+          Command
+  deriving (Show)
