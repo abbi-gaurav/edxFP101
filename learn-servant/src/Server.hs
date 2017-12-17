@@ -42,16 +42,20 @@ data User = User
 
 instance ToJSON User
 
-type UserAPI1 = "users" :> Get '[ JSON] [User]
+type UserAPI1
+   = "users" :> Get '[ JSON] [User] :<|> "albert" :> Get '[ JSON] User :<|> "issac" :> Get '[ JSON] User
 
 users1 :: [User]
-users1 =
-  [ User "Issac Nwton" 372 "issac.newton@co.uk" (fromGregorian 1683 3 1)
-  , User "Albert Einstein" 136 "ae@mc2.org" (fromGregorian 1905 12 1)
-  ]
+users1 = [issac, albert]
+
+issac :: User
+issac = User "Issac Nwton" 372 "issac.newton@co.uk" (fromGregorian 1683 3 1)
+
+albert :: User
+albert = User "Albert Einstein" 136 "ae@mc2.org" (fromGregorian 1905 12 1)
 
 server1 :: Server UserAPI1
-server1 = return users1
+server1 = return users1 :<|> return albert :<|> return issac
 
 userAPI :: Proxy UserAPI1
 userAPI = Proxy
