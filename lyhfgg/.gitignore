@@ -1,0 +1,6 @@
+.stack-work/
+lyhfgg.cabal
+*~
+/.idea/
+/dist/
+/out/
