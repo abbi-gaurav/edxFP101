@@ -1,14 +1,7 @@
 module SimpleJson where
 
 import           Data.List (intercalate)
-
-data JValue = JString String
-            | JNumber Double
-            | JBool Bool
-            | JNull
-            | JObject [(String, JValue)]
-            | JArray [JValue]
-           deriving (Eq, Ord, Show)
+import JSONModel
 
 getString :: JValue -> Maybe String
 getString (JString s) = Just s
