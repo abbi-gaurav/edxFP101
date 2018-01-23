@@ -1,8 +1,8 @@
 module Prettify where
 
-import Numeric (showHex)
-import Data.Bits
-import Data.Char (ord)
+import           Data.Bits
+import           Data.Char (ord)
+import           Numeric   (showHex)
 
 data Doc = Empty
          | Char Char
@@ -88,10 +88,10 @@ group :: Doc -> Doc
 group x = flatten x `Union` x
 
 flatten :: Doc -> Doc
-flatten (x `Concat` y)     = flatten x `Concat` flatten y
-flatten Line               = Char ' '
-flatten (x `Union` _)      = flatten x
-flatten other              = other
+flatten (x `Concat` y) = flatten x `Concat` flatten y
+flatten Line           = Char ' '
+flatten (x `Union` _)  = flatten x
+flatten other          = other
 
 punctuate :: Doc -> [Doc] -> [Doc]
 punctuate p []       = []
@@ -103,12 +103,13 @@ compact x  = transform [x]
   where transform [] = ""
         transform (d:ds) =
           case d of
-           Empty             -> transform ds
-           Char c            -> c : transform ds
-           Text t            -> t ++ transform ds
-           Line              -> '\n' : transform ds
-           a `Concat` b      -> transform (a : b : ds)
-           _ `Union` b       -> transform (b : ds)
+           Empty        -> transform ds
+           Char c       -> c : transform ds
+           Text t       -> t ++ transform ds
+           Line         -> '\n' : transform ds
+           a `Concat` b -> transform (a : b : ds)
+           _ `Union` b  -> transform (b : ds)
+
 pretty :: Int -> Doc -> String
 pretty width x = best 0 [x]
   where best col (d:ds) =
