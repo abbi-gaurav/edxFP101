@@ -1,0 +1,80 @@
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: bdab97567d8c154b67b1b60bdf77fc4f939d332c23c749cbcd8e3b197b03e08c
+
+name:           basics
+version:        0.1.0.0
+synopsis:       Short description of your package
+description:    Please see the README on Github at <https://github.com/githubuser/basics#readme>
+homepage:       https://github.com/githubuser/basics#readme
+bug-reports:    https://github.com/githubuser/basics/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2017 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/basics
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+  exposed-modules:
+      Composition
+      JSONClass
+      JSONModel
+      Lib
+      Lockers
+      MyList
+      NewType
+      Prettify
+      PrettyJSON
+      Records
+      Shape
+      SimpleJson
+      TrafficLight
+      Tree
+      YesNo
+  other-modules:
+      Paths_basics
+  default-language: Haskell2010
+
+executable basics-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , basics
+    , containers
+  other-modules:
+      Paths_basics
+  default-language: Haskell2010
+
+test-suite basics-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , basics
+    , containers
+  other-modules:
+      Paths_basics
+  default-language: Haskell2010

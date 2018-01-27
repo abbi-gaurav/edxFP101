@@ -1,3 +1,3 @@
-# Changelog for lyhfgg
+# Changelog for basics
 
 ## Unreleased changes
