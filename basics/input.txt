@@ -1,0 +1,3 @@
+this is lowercase and
+haskell is awesome
+being lazy is like streams

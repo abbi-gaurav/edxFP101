@@ -21,10 +21,17 @@ description:         Please see the README on Github at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- bytestring
 - containers
 
 library:
-  source-dirs: src
+  source-dirs:
+    - src/
+    - src/lyhfgg/
+    - src/rwh/examples/
+    - src/rwh/json/
+    - src/rwh/io/
+    - src/rwh/file-processing/
 
 executables:
   basics-exe:
