@@ -1,3 +1,5 @@
-this is lowercase and
-haskell is awesome
-being lazy is like streams
+1
+2
+3
+4
+5

@@ -131,4 +131,7 @@ f.g = \x -> f (g x)
 #+END_SRC
 - ~Maybe~ takes one concrete type and returns another concrete type
 - *Type constructors are curried (just like functions), so we can partially apply them, as you can see here*
-- 
+-
+* compilation
+- ghc
+~ghc -o out/sum-file src/rwh/file-processing/SumFile.hs~

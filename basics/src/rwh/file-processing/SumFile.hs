@@ -1,5 +1,3 @@
-module SumFile where
-
 main = do
   contents <- getContents
   print (sumFile contents)
