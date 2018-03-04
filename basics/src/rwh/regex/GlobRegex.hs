@@ -10,6 +10,10 @@ import           Text.Regex.Posix ((=~))
 globToRegex :: String -> String
 globToRegex cs = '^' : globToRegex' cs ++ "$"
 
+-- does not work
+globToRegexI :: String -> String
+globToRegexI cs = "?i^" ++ globToRegex' cs ++ "$"
+
 globToRegex' :: String -> String
 globToRegex' ""                   = ""
 globToRegex' ('*' : cs)           = ".*" ++ globToRegex' cs

@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 261a13b9ea7d1ab464102e7293db54e148a2fc2d34ba168287f96866bb20b0db
+-- hash: 3199fada35560650cc3955b69b44ef64faf5cb27c951289bf7b03b9c61f3cf49
 
 name:           basics
 version:        0.1.0.0
@@ -38,6 +38,8 @@ library
       base >=4.7 && <5
     , bytestring
     , containers
+    , directory
+    , filepath
     , regex-posix >=0.95.2
   exposed-modules:
       Lib
@@ -55,6 +57,7 @@ library
       Prettify
       PrettyJSON
       SimpleJson
+      Glob
       GlobRegex
   other-modules:
       Paths_basics
@@ -70,6 +73,8 @@ executable basics-exe
     , basics
     , bytestring
     , containers
+    , directory
+    , filepath
     , regex-posix >=0.95.2
   other-modules:
       Paths_basics
@@ -86,6 +91,8 @@ test-suite basics-test
     , basics
     , bytestring
     , containers
+    , directory
+    , filepath
     , regex-posix >=0.95.2
   other-modules:
       Paths_basics
