@@ -15,8 +15,8 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: ghc-8.0.1
-
+resolver: lts-10.0
+allow-newer: true
 # User packages to be built.
 # Various formats can be used as shown in the example below.
 #
