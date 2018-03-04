@@ -1,4 +1,3 @@
-{-# LANGUAGE Not #-}
 module Glob(namesMatching)  where
 
 import           Control.Exception (Exception, SomeException, handle)
