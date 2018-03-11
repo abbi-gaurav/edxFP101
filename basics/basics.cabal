@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3199fada35560650cc3955b69b44ef64faf5cb27c951289bf7b03b9c61f3cf49
+-- hash: 8d9a192c3cecf8422aeef8182b0cb850291a34284abbe9663adb26415f5f99d2
 
 name:           basics
 version:        0.1.0.0
@@ -59,6 +59,7 @@ library
       SimpleJson
       Glob
       GlobRegex
+      Useful
   other-modules:
       Paths_basics
   default-language: Haskell2010
