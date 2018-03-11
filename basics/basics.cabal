@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8d9a192c3cecf8422aeef8182b0cb850291a34284abbe9663adb26415f5f99d2
+-- hash: 7eae39b434faa08ebc426c3031e66e236a1c9fe7a02ef6727ca7fe5808da09d6
 
 name:           basics
 version:        0.1.0.0
@@ -57,6 +57,7 @@ library
       Prettify
       PrettyJSON
       SimpleJson
+      RecursiveContents
       Glob
       GlobRegex
       Useful
