@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7eae39b434faa08ebc426c3031e66e236a1c9fe7a02ef6727ca7fe5808da09d6
+-- hash: d18a510e634b156fdf4db2fd0302d1dbcfe5c29b78ffcdb217c4df46af470d63
 
 name:           basics
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
     , directory
     , filepath
     , regex-posix >=0.95.2
+    , time
   exposed-modules:
       Lib
       Lockers
@@ -57,7 +58,9 @@ library
       Prettify
       PrettyJSON
       SimpleJson
+      BetterPredicate
       RecursiveContents
+      SimpleFinder
       Glob
       GlobRegex
       Useful
@@ -78,6 +81,7 @@ executable basics-exe
     , directory
     , filepath
     , regex-posix >=0.95.2
+    , time
   other-modules:
       Paths_basics
   default-language: Haskell2010
@@ -96,6 +100,7 @@ test-suite basics-test
     , directory
     , filepath
     , regex-posix >=0.95.2
+    , time
   other-modules:
       Paths_basics
   default-language: Haskell2010

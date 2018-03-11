@@ -26,6 +26,7 @@ dependencies:
 - directory
 - filepath
 - regex-posix >= 0.95.2
+- time
 
 library:
   source-dirs:
