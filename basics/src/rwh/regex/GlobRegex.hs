@@ -7,32 +7,35 @@ where
 
 import           Text.Regex.Posix ((=~))
 
-globToRegex :: String -> String
-globToRegex cs = '^' : globToRegex' cs ++ "$"
+type GlobError = String
+
+globToRegex :: String -> Either GlobError String
+globToRegex cs = fmap (\res -> '^' : res ++ "$") (globToRegex' cs)
+
 
 -- does not work
-globToRegexI :: String -> String
-globToRegexI cs = "?i^" ++ globToRegex' cs ++ "$"
+globToRegexI :: String -> Either GlobError String
+globToRegexI cs = fmap (\res -> "?i^" ++ res ++ "$") (globToRegex' cs)
 
-globToRegex' :: String -> String
-globToRegex' ""                   = ""
-globToRegex' ('*' : cs)           = ".*" ++ globToRegex' cs
-globToRegex' ('?' : cs)           = '.' : globToRegex' cs
-globToRegex' ('[' : '!' : c : cs) = "[^" ++ c : charClass cs
-globToRegex' ('[' : c : cs)       = '[' : c : charClass cs
-globToRegex' ('[':_)              = error "unterminated character class"
-globToRegex' (c : cs)             = escape c ++ globToRegex' cs
+globToRegex' :: String -> Either GlobError String
+globToRegex' ""                   = Right ""
+globToRegex' ('*' : cs)           = fmap (\res -> ".*" ++ res) (globToRegex' cs)
+globToRegex' ('?' : cs)           = fmap (\res -> '.' : res) (globToRegex' cs)
+globToRegex' ('[' : '!' : c : cs) = fmap (\res -> "[^" ++ c : res) (charClass cs)
+globToRegex' ('[' : c : cs)       = fmap (\res -> '[' : c : res) (charClass cs)
+globToRegex' ('[':_)              = Left "unterminated character class"
+globToRegex' (c : cs)             = fmap (\res -> escape c ++ res) (globToRegex' cs)
 
 escape :: Char -> String
 escape c | c `elem` regexChars = '\\' : [c]
          | otherwise = [c]
   where regexChars = "\\+()^$.{}]|"
 
-charClass :: String -> String
-charClass (']' : cs) = ']' : globToRegex' cs
-charClass (c:cs)     = c : charClass cs
-charClass []         = error "unterminated character class"
+charClass :: String -> Either GlobError String
+charClass (']' : cs) = fmap (\res -> ']' : res) (globToRegex' cs)
+charClass (c:cs)     = fmap (\res -> c : res) (charClass cs)
+charClass []         = Left "unterminated character class"
 
 
-matchesGlob :: FilePath -> String -> Bool
-name `matchesGlob` pat = name =~ globToRegex pat
+matchesGlob :: FilePath -> String -> Either GlobError Bool
+name `matchesGlob` pat = fmap (\res -> name =~ res) (globToRegex pat)

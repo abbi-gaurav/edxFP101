@@ -48,9 +48,13 @@ listMatches dirName pat = do
         let names' = if isHidden pat
                      then filter isHidden names
                      else filter (not . isHidden) names
-        return (filter (`matchesGlob` pat) names')
+        return (filter (\x -> filterEither(x `matchesGlob` pat)) names')
           where errorHandler :: SomeException -> IO[String]
                 errorHandler  = const (return [])
+
+filterEither :: Either a Bool -> Bool
+filterEither (Left _)  = False
+filterEither (Right b) = b
 
 isHidden :: String -> Bool
 isHidden ('.' : _) = True
