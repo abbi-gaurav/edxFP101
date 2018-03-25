@@ -1,0 +1,66 @@
+* categories
+
+[[file:./categories.png]]
+
+|-------------+---------|
+| objects     | A,B,C   |
+| morphisms   | f,g,f;g |
+| composition | f;g     |
+|-------------+---------|
+* products
+[[file:./products.png]]   [[file:./products-2.png]]
+
+~cat(C,A x B) ~== cat(C,A) x cat(C,B)~
+
+#+BEGIN_SRC haskell
+  data Product a b = Pair {first :: a, snd :: b}
+#+END_SRC
+* sums
+[[file:./sums.png]]
+
+~cat(A+B,C) ~== cat(A,C) x cat(B,C)~
+
+#+BEGIN_SRC haskell
+  data Sum a b = Left a | Right b
+  type ErrInt = Sum String Int
+  err = Left "error"
+  one = Right 1
+
+  add :: ErrInt -> ErrInt -> ErrInt
+  add (Left e) _ = Left e
+  add _ (Left e) = Left e
+  add (Right m) (Right n) = Right (m + n)
+#+END_SRC
+* exponentials
+
+[[file:./exponentials.png]]
+
+~cat(C x A, B) ~== cat(c, (A=>B))~
+
+#+BEGIN_SRC haskell
+  add :: Int -> (Int -> Int)
+  add n = \x -> n + x
+  
+  incr :: Int -> Int
+  incr = add 1
+
+  three :: Int
+  three = incr 2
+
+#+END_SRC
+* duals
+[[file:./products.png]]
+
+[[file:./sums.png]]
+
+* category laws
+** /associative/
+~f . (g . h) = (f . g) . h~
+** category needs to be ~closed~ uder ~composition~
+if ~f: B ---> C~
+and ~g : A ---> B~,
+then there must be ~h : A ---> C~
+and ~h = f . g~
+** identity
+~g : A ---> B~
+~g . idA = idB . g = g~
