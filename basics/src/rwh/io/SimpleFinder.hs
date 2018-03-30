@@ -2,6 +2,6 @@ module SimpleFinder where
 import           RecursiveContents
 
 simpleFind :: (FilePath -> Bool) -> FilePath -> IO[FilePath]
-simpleFind p path = do
+simpleFind predicate path = do
   names <- getRecursiveContents path
-  return (filter p names)
+  return (filter predicate names)
