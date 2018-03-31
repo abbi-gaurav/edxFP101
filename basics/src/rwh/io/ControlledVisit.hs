@@ -13,7 +13,7 @@ data Info = Info {
   , infoPerms   :: Maybe Permissions
   , infoSize    :: Maybe Integer
   , infoModTime :: Maybe UTCTime
-  }
+  } deriving (Show, Eq, Ord)
 
 maybeIO :: IO a -> IO (Maybe a)
 maybeIO action = handle errorHandler (Just `liftM` action)
