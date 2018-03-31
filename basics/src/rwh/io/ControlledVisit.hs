@@ -32,10 +32,12 @@ traverseFP order path = do
   names <- getUsefulContents path
   let fullNames = (path : map (path </>) names)
   contents <- mapM getInfo fullNames
-  liftM concat $ forM (order contents) $ \info -> do
-    if isDirectory info && infoPath info /= path
-      then traverseFP order (infoPath info)
-      else return [info]
+  -- liftM concat $ forM [1] (\x -> Just[x])
+  liftM concat $ forM (order contents) recurse
+  where recurse info = do
+          if isDirectory info && infoPath info /= path
+            then traverseFP order (infoPath info)
+            else return [info]
 
 isDirectory :: Info -> Bool
 isDirectory = maybe False searchable . infoPerms
