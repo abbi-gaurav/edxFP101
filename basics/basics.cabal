@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d18a510e634b156fdf4db2fd0302d1dbcfe5c29b78ffcdb217c4df46af470d63
+-- hash: 15149019946d326af6f8a88acc3ecd26f52e4ec33a1323a07717679988fe014a
 
 name:           basics
 version:        0.1.0.0
@@ -59,6 +59,7 @@ library
       PrettyJSON
       SimpleJson
       BetterPredicate
+      ControlledVisit
       RecursiveContents
       SimpleFinder
       Glob
