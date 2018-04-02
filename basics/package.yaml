@@ -36,6 +36,7 @@ library:
     - src/rwh/json/
     - src/rwh/io/
     - src/rwh/regex/
+    - src/rwh/binary-parsing/
 
 executables:
   basics-exe:

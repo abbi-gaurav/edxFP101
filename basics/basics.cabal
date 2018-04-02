@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 15149019946d326af6f8a88acc3ecd26f52e4ec33a1323a07717679988fe014a
+-- hash: 01bbc6626c6cd53035a0bc1a5c2ba5c467d9df4237cc990d87ede8f853f701e1
 
 name:           basics
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       src/rwh/json/
       src/rwh/io/
       src/rwh/regex/
+      src/rwh/binary-parsing/
   build-depends:
       base >=4.7 && <5
     , bytestring
@@ -60,11 +61,13 @@ library
       SimpleJson
       BetterPredicate
       ControlledVisit
+      FoldDir
       RecursiveContents
       SimpleFinder
       Glob
       GlobRegex
       Useful
+      PNM
   other-modules:
       Paths_basics
   default-language: Haskell2010
