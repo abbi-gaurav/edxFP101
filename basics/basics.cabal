@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 01bbc6626c6cd53035a0bc1a5c2ba5c467d9df4237cc990d87ede8f853f701e1
+-- hash: 100cd5200590907aa740ea1433143ae95deb3c68d3b07b4f13c0510b4d456c5c
 
 name:           basics
 version:        0.1.0.0
@@ -67,6 +67,7 @@ library
       Glob
       GlobRegex
       Useful
+      Parse
       PNM
   other-modules:
       Paths_basics
