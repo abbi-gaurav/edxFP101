@@ -55,3 +55,24 @@ parseP5 s =
                         case getBytes(width * height) s5 of
                           Nothing -> Nothing
                           Just (bitmap, s6) -> Just (GreyMap width height maxGrey bitmap, s6)
+
+
+(>>?) :: Maybe a -> (a -> Maybe b) -> Maybe b
+Nothing >>? _  = Nothing
+Just v  >>? f  = f v
+
+parseP5_take2 :: L.ByteString -> Maybe (GreyMap, L.ByteString)
+parseP5_take2 s =
+  matchHeader (L8.pack "P5") s          >>?
+  \s -> skipSpace ((),s)                >>?
+  (getNat . snd)                        >>?
+  skipSpace                             >>?
+  \(width, s) -> getNat s               >>?
+  skipSpace                             >>?
+  \(height, s) -> getNat s              >>?
+  \(maxGrey, s) -> getBytes 1 s         >>?
+  (getBytes (width * height) . snd)     >>?
+  \(bitMap, s) -> Just (GreyMap width height maxGrey bitMap, s)
+
+skipSpace :: (a, L.ByteString) -> Maybe (a, L.ByteString)
+skipSpace (a,s) = Just (a, L8.dropWhile isSpace s)
