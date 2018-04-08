@@ -85,8 +85,8 @@ peekChar :: Parse (Maybe Char)
 peekChar = (fmap w2c) <$> peekByte
 
 parseWhile :: (Word8 -> Bool) -> Parse [Word8]
-parseWhile p = ((fmap p) <$> peekByte) ==> \maybeTrue ->
+parseWhile p = ((fmap p) <$> peekByte) ==> (\maybeTrue ->
                                              if maybeTrue == Just True
-                                             then parseByte ==> \byte ->
-                                               (byte:) <$> parseWhile p
+                                             then parseByte ==> (\byte -> (byte:) <$> (parseWhile p))
                                              else identity []
+                                           )
