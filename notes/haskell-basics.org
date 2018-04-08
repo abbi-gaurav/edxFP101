@@ -87,9 +87,14 @@ f.g = \x -> f (g x)
 *** f.g = f after g
 * week 7 Functional Parsers and Monads
 ** parser : a program that analyzes a piece of text to determine its syntactic structure
-** functor
-*** fmap :: (a -> b) -> f a -> f b
-*** it is a computational context
+** functors
+- it is a computational context
+#+BEGIN_SRC haskell
+  fmap :: (a -> b) -> f a -> f b
+  -- functor laws
+  fmap id == id
+  fmap (f . g) == fmap f . fmap g
+#+END_SRC
 * week 9 Declaring Types and classes
 ** alias
 *** type String = [Char]

@@ -37,6 +37,7 @@ library:
     - src/rwh/io/
     - src/rwh/regex/
     - src/rwh/binary-parsing/
+    - src/rwh/functors/
 
 executables:
   basics-exe:

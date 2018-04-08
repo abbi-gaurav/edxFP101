@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 100cd5200590907aa740ea1433143ae95deb3c68d3b07b4f13c0510b4d456c5c
+-- hash: ab6303b2811bcb409a33c33a015e1e588e3ef4ebd82daaf9688e49bc2e073917
 
 name:           basics
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       src/rwh/io/
       src/rwh/regex/
       src/rwh/binary-parsing/
+      src/rwh/functors/
   build-depends:
       base >=4.7 && <5
     , bytestring
@@ -69,6 +70,7 @@ library
       Useful
       Parse
       PNM
+      TreeMap
   other-modules:
       Paths_basics
   default-language: Haskell2010
