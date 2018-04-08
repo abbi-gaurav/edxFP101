@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ab6303b2811bcb409a33c33a015e1e588e3ef4ebd82daaf9688e49bc2e073917
+-- hash: 528e50b523256eedceb022ff54717d7fc2f1b268e21424b9a28c70b63136c316
 
 name:           basics
 version:        0.1.0.0
@@ -68,6 +68,7 @@ library
       Glob
       GlobRegex
       Useful
+      Common
       Parse
       PNM
       TreeMap

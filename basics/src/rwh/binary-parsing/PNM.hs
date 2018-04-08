@@ -1,18 +1,9 @@
 module PNM where
 
+import           Common
 import qualified Data.ByteString.Lazy       as L
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Char                  (isSpace)
-
-data GreyMap = GreyMap {
-  greyWidth    :: Int
-  , greyHeight :: Int
-  , greyMax    :: Int
-  , greyData   :: L.ByteString
-                       } deriving (Eq)
-
-instance Show GreyMap where
-  show (GreyMap w h m _) = "GreyMap " ++ show w ++ " x " ++ show h ++ " " ++ show m
 
 matchHeader :: L.ByteString -> L.ByteString -> Maybe L.ByteString
 matchHeader prefix str
@@ -61,6 +52,9 @@ parseP5 s =
 Nothing >>? _  = Nothing
 Just v  >>? f  = f v
 
+skipSpace :: (a, L.ByteString) -> Maybe (a, L.ByteString)
+skipSpace (a,s) = Just (a, L8.dropWhile isSpace s)
+
 parseP5_take2 :: L.ByteString -> Maybe (GreyMap, L.ByteString)
 parseP5_take2 s =
   matchHeader (L8.pack "P5") s          >>?
@@ -73,6 +67,3 @@ parseP5_take2 s =
   \(maxGrey, s) -> getBytes 1 s         >>?
   (getBytes (width * height) . snd)     >>?
   \(bitMap, s) -> Just (GreyMap width height maxGrey bitMap, s)
-
-skipSpace :: (a, L.ByteString) -> Maybe (a, L.ByteString)
-skipSpace (a,s) = Just (a, L8.dropWhile isSpace s)
