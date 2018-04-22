@@ -25,6 +25,7 @@ dependencies:
 - containers
 - directory
 - filepath
+- QuickCheck
 - regex-posix >= 0.95.2
 - time
 
@@ -38,6 +39,7 @@ library:
     - src/rwh/regex/
     - src/rwh/binary-parsing/
     - src/rwh/functors/
+    - src/rwh/testing/
 
 executables:
   basics-exe:

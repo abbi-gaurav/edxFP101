@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 528e50b523256eedceb022ff54717d7fc2f1b268e21424b9a28c70b63136c316
+-- hash: f94443f11004d06c51768745c1cccdd7cc5bd0ac19a708d61fac7170d4fd3fae
 
 name:           basics
 version:        0.1.0.0
@@ -36,8 +36,10 @@ library
       src/rwh/regex/
       src/rwh/binary-parsing/
       src/rwh/functors/
+      src/rwh/testing/
   build-depends:
-      base >=4.7 && <5
+      QuickCheck
+    , base >=4.7 && <5
     , bytestring
     , containers
     , directory
@@ -72,6 +74,7 @@ library
       Parse
       PNM
       TreeMap
+      QCBasics
   other-modules:
       Paths_basics
   default-language: Haskell2010
@@ -82,7 +85,8 @@ executable basics-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      QuickCheck
+    , base >=4.7 && <5
     , basics
     , bytestring
     , containers
@@ -101,7 +105,8 @@ test-suite basics-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      QuickCheck
+    , base >=4.7 && <5
     , basics
     , bytestring
     , containers
