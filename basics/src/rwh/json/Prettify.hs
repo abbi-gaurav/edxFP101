@@ -40,10 +40,11 @@ string :: String -> Doc
 string = enclose '"' '"' . hcat . map oneChar
 
 fold :: (Doc -> Doc -> Doc) -> [Doc] -> Doc
-fold f = foldr f empty
+fold f list = foldr f empty list
 
+-- horizontal concat
 hcat :: [Doc] -> Doc
-hcat = fold (<>)
+hcat list = fold (<>) list
 
 oneChar :: Char -> Doc
 oneChar c = case lookup c simpleEscapes of
@@ -93,6 +94,7 @@ flatten Line           = Char ' '
 flatten (x `Union` _)  = flatten x
 flatten other          = other
 
+-- append p to each
 punctuate :: Doc -> [Doc] -> [Doc]
 punctuate p []       = []
 punctuate p [d]      = [d]

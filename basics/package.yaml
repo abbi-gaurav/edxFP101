@@ -26,6 +26,7 @@ dependencies:
 - directory
 - filepath
 - QuickCheck
+- random
 - regex-posix >= 0.95.2
 - time
 
@@ -51,6 +52,11 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - basics
+  qc-exe:
+    main: Main.hs
+    source-dirs:
+      - src/rwh/testing
+      - src/rwh/json
 
 tests:
   basics-test:

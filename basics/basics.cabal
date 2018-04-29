@@ -1,8 +1,8 @@
--- This file has been generated from package.yaml by hpack version 0.20.0.
+-- This file has been generated from package.yaml by hpack version 0.28.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f94443f11004d06c51768745c1cccdd7cc5bd0ac19a708d61fac7170d4fd3fae
+-- hash: 8ed18ae2fa14f52e34ce4752fcd6abb684d2a7fb586df4cbb7cc23fd45611bef
 
 name:           basics
 version:        0.1.0.0
@@ -17,7 +17,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
-
 extra-source-files:
     ChangeLog.md
     README.md
@@ -44,6 +43,7 @@ library
     , containers
     , directory
     , filepath
+    , random
     , regex-posix >=0.95.2
     , time
   exposed-modules:
@@ -74,6 +74,10 @@ library
       Parse
       PNM
       TreeMap
+      Arbitrary2
+      ArbitraryDefs
+      Main
+      QC
       QCBasics
   other-modules:
       Paths_basics
@@ -92,10 +96,40 @@ executable basics-exe
     , containers
     , directory
     , filepath
+    , random
     , regex-posix >=0.95.2
     , time
   other-modules:
       Paths_basics
+  default-language: Haskell2010
+
+executable qc-exe
+  main-is: Main.hs
+  other-modules:
+      Arbitrary2
+      ArbitraryDefs
+      QC
+      QCBasics
+      JSONClass
+      JSONModel
+      NewType
+      Prettify
+      PrettyJSON
+      SimpleJson
+      Paths_basics
+  hs-source-dirs:
+      src/rwh/testing
+      src/rwh/json
+  build-depends:
+      QuickCheck
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , directory
+    , filepath
+    , random
+    , regex-posix >=0.95.2
+    , time
   default-language: Haskell2010
 
 test-suite basics-test
@@ -112,6 +146,7 @@ test-suite basics-test
     , containers
     , directory
     , filepath
+    , random
     , regex-posix >=0.95.2
     , time
   other-modules:
