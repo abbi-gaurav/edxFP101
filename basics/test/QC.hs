@@ -79,6 +79,11 @@ prop_punctuate' s xs = punctuate s xs == combine (intersperse s xs)
         combine (Empty : y : ys) = y : combine ys
         combine (x : y : ys)     = x `Concat` y : combine ys
 
+prop_mempty_id x =
+  mempty `mappend` x == x
+  &&
+  x `mappend` mempty == (x :: Doc)
+
 return []
 runTests :: IO Bool
 runTests = $quickCheckAll

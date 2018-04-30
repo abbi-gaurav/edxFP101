@@ -12,6 +12,10 @@ data Doc = Empty
          | Union Doc Doc
   deriving (Show, Eq)
 
+instance Monoid Doc where
+  mempty = empty
+  mappend = (<>)
+
 empty :: Doc
 empty = Empty
 
