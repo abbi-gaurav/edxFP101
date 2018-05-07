@@ -1,4 +1,4 @@
-module Main where
+module BasicsTest where
 
 import qualified QC          as DocTests
 import           System.Exit

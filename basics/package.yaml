@@ -20,6 +20,7 @@ synopsis:            Short description of your package
 description:         Please see the README on Github at <https://github.com/githubuser/basics#readme>
 
 dependencies:
+- array
 - base >= 4.7 && < 5
 - bytestring
 - containers
@@ -41,6 +42,7 @@ library:
     - src/rwh/binary-parsing/
     - src/rwh/functors/
     - src/rwh/testing/
+    - src/rwh/bar-code/
 
 executables:
   basics-exe:
@@ -52,15 +54,10 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - basics
-  qc-exe:
-    main: Main.hs
-    source-dirs:
-      - src/rwh/testing
-      - src/rwh/json
 
 tests:
   basics-test:
-    main:                Main.hs
+    main:                BasicsTest.hs
     source-dirs:         test
     ghc-options:
     - -threaded
