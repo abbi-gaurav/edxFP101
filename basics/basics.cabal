@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dff52788a1d95fc23dea28489d2705afad1b76d28218a5c7f4f3b61b4e09b169
+-- hash: 1137e3bc0ea5d8f4763d8c47c228f22b1d2234b1ffb3aaa6a55a710bfdac1acd
 
 name:           basics
 version:        0.1.0.0
@@ -78,7 +78,6 @@ library
       TreeMap
       Arbitrary2
       ArbitraryDefs
-      Main
       QC
       QCBasics
       Barcode
