@@ -54,3 +54,10 @@ foldA f acc array = go acc (indices array)
   where go acc (i : is) = let acc' = f acc (array ! i)
                           in acc' `seq` go acc' is
         go acc _        = acc
+
+-- TODO figure out more efficient way to get startindex
+-- strict fold with accumulator as first element
+foldA1 :: Ix k => (a -> a -> a) -> Array k a -> a
+foldA1 f array = let startIndex = indices array !! 1
+                     endIndex = snd (bounds array)
+                 in foldA f (array ! fst (bounds array)) (ixmap (startIndex , endIndex) id array)
