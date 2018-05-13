@@ -13,6 +13,7 @@ import qualified Data.Map                   as M
 import           Data.Maybe                 (catMaybes, listToMaybe)
 import           Data.Ratio                 (Ratio)
 import           Data.Word                  (Word8)
+import           Parse
 import           System.Environment         (getArgs)
 
 -- http://www.barcodeisland.com/ean13.phtml
@@ -83,3 +84,54 @@ rightEncode x = (rightCodes ! x)
 
 outerGuard = "101"
 centerGuard = "01010"
+
+type Pixel = Word8
+type RGB = (Pixel, Pixel, Pixel)
+
+type PixMap = Array (Int, Int) RGB
+
+parseRawPPM :: Parse PixMap
+parseRawPPM =
+  parseWhileWith w2c (/= '\n') ==> \header -> skipSpaces ==>&
+  assert (header == "P6") "invalid raw header" ==>&
+  parseNat ==> \width -> skipSpaces ==>&
+  parseNat ==> \height -> skipSpaces ==>&
+  parseNat ==> \maxValue ->
+  assert(maxValue == 255) "max value out of spec" ==>&
+  parseByte ==>&
+  parseTimes (width * height) parseRGB ==> \pxs ->
+  identity(listArray ((0,0), (width - 1, height - 1)) pxs)
+
+parseRGB :: Parse RGB
+parseRGB = parseByte ==> \r ->
+           parseByte ==> \g ->
+           parseByte ==> \b ->
+           identity (r,g,b)
+
+parseTimes :: Int -> Parse a -> Parse [a]
+parseTimes 0 _ = identity []
+parseTimes n p = p ==> \x -> ((x:) <$>  (parseTimes (n-1) p))
+
+luminance :: (Pixel, Pixel, Pixel) -> Pixel
+luminance (r,g,b) = round (r' * 0.30 + g' * 0.59 + b' * 0.11)
+  where r' = fromIntegral r
+        g' = fromIntegral g
+        b' = fromIntegral b
+
+type GreyMap = Array (Int, Int) Pixel
+
+pixMapToGreyMap :: PixMap -> GreyMap
+pixMapToGreyMap pm = luminance <$> pm
+
+data Bit = Zero | One
+  deriving (Eq, Show)
+
+
+threshold :: (Ix k, Integral a) => Double -> Array k a -> Array k Bit
+threshold n arr = binary <$> arr
+  where binary i | i < pivot = Zero
+                 | otherwise = One
+        pivot    = round (least + (greatest - least) * n)
+        least    = fromIntegral (choose (<) arr)
+        greatest = fromIntegral (choose (>) arr)
+        choose f = foldA1 (\x y -> if f x y then x else y)
