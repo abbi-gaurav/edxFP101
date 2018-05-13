@@ -15,6 +15,8 @@ import           Data.Ratio                 (Ratio)
 import           Data.Word                  (Word8)
 import           System.Environment         (getArgs)
 
+-- http://www.barcodeisland.com/ean13.phtml
+--101
 checkDigit :: (Integral a) => [a] -> a
 checkDigit ds = 10 - ((sum products) `mod` 10)
   where products = mapEveryOther (*3) (reverse ds)
@@ -39,7 +41,7 @@ parityList = ["111111", "110100", "110010", "110001", "101100",
               "100110", "100011", "101010", "101001", "100101"]
 
 listToArray :: [a] -> Array Int a
-listToArray xs = listArray (0, l -1) xs
+listToArray xs = listArray (0, l - 1) xs
   where l = length xs
 
 leftOddCodes, leftEvenCodes, rightCodes, parityCodes :: Array Int String
@@ -61,3 +63,23 @@ foldA1 :: Ix k => (a -> a -> a) -> Array k a -> a
 foldA1 f array = let startIndex = indices array !! 1
                      endIndex = snd (bounds array)
                  in foldA f (array ! fst (bounds array)) (ixmap (startIndex , endIndex) id array)
+
+encodeEAN13 :: String -> String
+encodeEAN13 = concat . encodeDigits . map digitToInt
+
+encodeDigits :: [Int] -> [String]
+encodeDigits s@(first : rest) =
+  outerGuard : lefties ++ centerGuard : righties ++ [outerGuard]
+  where (left, right) = splitAt 5 rest
+        lefties = zipWith leftEncode (parityCodes ! first) left
+        righties = map rightEncode (right ++ [checkDigit s])
+
+leftEncode :: Char -> Int -> String
+leftEncode '1' x = (leftOddCodes ! x)
+leftEncode '0' x = (leftEvenCodes ! x)
+
+rightEncode :: Int -> String
+rightEncode x = (rightCodes ! x)
+
+outerGuard = "101"
+centerGuard = "01010"
