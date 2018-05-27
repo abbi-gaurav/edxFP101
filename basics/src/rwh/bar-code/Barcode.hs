@@ -7,6 +7,7 @@ import           Control.Applicative        ((<$>))
 import           Control.Monad              (forM_)
 import qualified Data.ByteString.Lazy.Char8 as L
 import           Data.Char                  (digitToInt)
+import           Data.Function
 import           Data.Ix                    (Ix (..))
 import           Data.List                  (foldl', group, sort, sortBy, tails)
 import qualified Data.Map                   as M
@@ -135,3 +136,91 @@ threshold n arr = binary <$> arr
         least    = fromIntegral (choose (<) arr)
         greatest = fromIntegral (choose (>) arr)
         choose f = foldA1 (\x y -> if f x y then x else y)
+
+type Run = Int
+type RunLength a = [(Run,a)]
+
+runLength :: Eq a => [a] -> RunLength a
+runLength  = (map rle) . group
+  where rle xs = (length xs, head xs)
+
+runLengths :: Eq a => [a] -> [Run]
+runLengths = (map fst) . runLength
+
+
+type Score = Ratio Int
+
+scaleToOne :: [Run] -> [Score]
+scaleToOne xs = map divide xs
+  where divide d = fromIntegral d / divisor
+        divisor = fromIntegral (sum xs)
+
+type ScoreTable = [[Score]]
+
+--- SRL ~ scaled run length
+asSRL :: [String] -> ScoreTable
+asSRL strings = map (scaleToOne . runLengths) strings
+
+leftOddSRL = asSRL leftOddList
+leftEvenSRL = asSRL leftEvenList
+rightSRL = asSRL rightList
+paritySRL = asSRL parityList
+
+distance :: [Score] -> [Score] -> Score
+--- (sum . map abs) (zipWith (-) a b)
+distance a b = sum . map abs $ zipWith (-) a b
+
+type Digit = Word8
+
+bestScores :: ScoreTable -> [Run] -> [(Score, Digit)]
+bestScores st rs = take 3 . sort $ scores
+  where scores = zip [distance d (scaleToOne rs) | d <- st] digits
+        digits = [0..9]
+
+data Parity a = Even a | Odd a | None a
+  deriving (Show)
+
+fromParity :: Parity a -> a
+fromParity (Even a) = a
+fromParity (Odd a)  = a
+fromParity (None a) = a
+
+parityMap :: (a -> b) -> Parity a -> Parity b
+parityMap f (Even a) = Even (f a)
+parityMap f (Odd a)  = Odd (f a)
+parityMap f (None a) = None (f a)
+
+instance Functor Parity where
+  fmap = parityMap
+
+compareWithoutParity :: Ord a => Parity a -> Parity a -> Ordering
+compareWithoutParity = compare `on` fromParity
+
+bestLeft :: [Run] -> [Parity (Score, Digit)]
+bestLeft ps = sortBy compareWithoutParity
+              (
+                (map Odd (bestScores leftOddSRL ps))
+                ++
+                (map Even (bestScores leftEvenSRL ps))
+              )
+bestRight :: [Run] -> [Parity (Score, Digit)]
+bestRight = (map None) . (bestScores rightSRL)
+
+chunkWith :: ([a] -> ([a],[a])) -> [a] -> [[a]]
+chunkWith _ [] = []
+chunkWith f xs = let (h,t) = f xs
+                     in h : chunkWith f t
+
+chunksOf :: Int -> [a] -> [[a]]
+chunksOf n = chunkWith (splitAt n)
+
+candidateDigits :: RunLength Bit -> [[Parity Digit]]
+candidateDigits ((_,One):_) = []
+candidateDigits rle         | length rle < 59 = []
+candidateDigits rle
+  | any null match = []
+  | otherwise = map (map (fmap snd)) match
+  where match      = map bestLeft left ++ map bestRight right
+        left       = chunksOf 4 . take 24 . drop 3 $ runLengths
+        right      = chunksOf 4 . take 24 . drop 32 $ runLengths
+        runLengths = map fst rle
