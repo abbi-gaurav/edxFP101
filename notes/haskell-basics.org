@@ -140,3 +140,7 @@ f.g = \x -> f (g x)
 * compilation
 - ghc
 ~ghc -o out/sum-file src/rwh/file-processing/SumFile.hs~
+* Data.Map
+- Map is strict in its keys, but nonstrict in its values.
+- In other words, the spine, or structure, of the map is always kept up-to-date, but values in the map aren’t evaluated unless we force them to be.
+- ~union~ is left-biased
