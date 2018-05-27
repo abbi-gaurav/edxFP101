@@ -43,6 +43,7 @@ library:
     - src/rwh/functors/
     - src/rwh/testing/
     - src/rwh/bar-code/
+    - src/rwh/data-structures/
 
 executables:
   basics-exe:
