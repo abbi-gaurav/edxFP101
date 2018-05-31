@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a7c42b27f8c18bd99fe4a720419bc94c7c06eb321e30f7ba64d24f9da7519740
+-- hash: 27d6ffc8e22de5b1b932b1c3cfcd4c00a467fcb4a0740c01dc538f6dd37e8e82
 
 name:           basics
 version:        0.1.0.0
@@ -84,6 +84,7 @@ library
       Barcode
       FuncRecs
       FuncRecs2
+      Num
       PasswdMap
       PasswordAl
   other-modules:
