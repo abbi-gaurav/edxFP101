@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 27d6ffc8e22de5b1b932b1c3cfcd4c00a467fcb4a0740c01dc538f6dd37e8e82
+-- hash: 344221c56d8e93531d56e7d9c1bd7c2edd1a9edaa6cddd18cfe6644459eb9d84
 
 name:           basics
 version:        0.1.0.0
@@ -82,6 +82,7 @@ library
       QC
       QCBasics
       Barcode
+      DList
       FuncRecs
       FuncRecs2
       Num
@@ -131,6 +132,7 @@ test-suite basics-test
     , regex-posix >=0.95.2
     , time
   other-modules:
+      DListSpec
       QC
       Spec
       Paths_basics
