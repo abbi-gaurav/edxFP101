@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 344221c56d8e93531d56e7d9c1bd7c2edd1a9edaa6cddd18cfe6644459eb9d84
+-- hash: 08aacd220b96437c70a02a48aecc5a3c49a04a9a233c99284fba57ddb2a44efd
 
 name:           basics
 version:        0.1.0.0
@@ -38,6 +38,7 @@ library
       src/rwh/testing/
       src/rwh/bar-code/
       src/rwh/data-structures/
+      src/rwh/monads/
   build-depends:
       QuickCheck
     , array
@@ -82,12 +83,16 @@ library
       QC
       QCBasics
       Barcode
+      DataSequence
       DList
       FuncRecs
       FuncRecs2
+      Monoid
       Num
       PasswdMap
       PasswordAl
+      GlobToRegex
+      Logger
   other-modules:
       Paths_basics
   default-language: Haskell2010
