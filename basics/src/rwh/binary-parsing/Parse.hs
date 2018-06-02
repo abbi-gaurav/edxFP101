@@ -2,6 +2,7 @@ module Parse where
 
 import           Common
 import           Control.Applicative
+import           Control.Monad
 import qualified Data.ByteString.Lazy       as L
 import qualified Data.ByteString.Lazy.Char8 as L8
 import           Data.Char
@@ -66,9 +67,6 @@ firstParser ==> secondParser = Parse chainedParser
           case runParse firstParser initState of
             Left errMsg -> Left errMsg
             Right (firstResult, newState) -> runParse (secondParser firstResult) newState
-
-instance Functor Parse where
-  fmap f parser = parser ==> (\result -> identity (f result))
 
 w2c :: Word8 -> Char
 w2c = chr . fromIntegral
@@ -136,3 +134,16 @@ parseRawPGM =
   parseNat ==> \maxGrey -> parseByte ==>&
   parseBytes (width * height) ==> \bitMap -> identity (GreyMap width height maxGrey bitMap)
   where notWhite = (`notElem` " \r\n\t")
+
+instance Functor Parse where
+  fmap f parser = parser ==> (\result -> identity (f result))
+
+instance Applicative Parse where
+  pure = identity
+
+ -- <*> :: [a->b] -> [a] -> [b]
+  parserF <*> m = parserF ==> (\f -> fmap f m)
+
+instance Monad Parse where
+ (>>=) = (==>)
+ fail = bail

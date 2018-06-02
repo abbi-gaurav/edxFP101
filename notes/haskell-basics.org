@@ -144,3 +144,10 @@ f.g = \x -> f (g x)
 - Map is strict in its keys, but nonstrict in its values.
 - In other words, the spine, or structure, of the map is always kept up-to-date, but values in the map aren’t evaluated unless we force them to be.
 - ~union~ is left-biased
+* Applicative
+- ~pure :: a -> ma~
+- ~<*> m (a->b) -> ma -> mb~ 
+* Monad
+- a type constructor ~m~
+- a chaining function ~ma -> (a -> mb) -> mb~
+- a injector ~a -> ma~
