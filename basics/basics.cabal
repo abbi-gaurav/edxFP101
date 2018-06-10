@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 08aacd220b96437c70a02a48aecc5a3c49a04a9a233c99284fba57ddb2a44efd
+-- hash: cfb42b8dd9538c168a6a4704b6c406820bed1f7f9fc9b6a41af2e3f71e4e7bcc
 
 name:           basics
 version:        0.1.0.0
@@ -47,6 +47,7 @@ library
     , containers
     , directory
     , filepath
+    , mtl
     , random
     , regex-posix >=0.95.2
     , time
@@ -93,6 +94,10 @@ library
       PasswordAl
       GlobToRegex
       Logger
+      MultiplyTo
+      Random
+      SimpleState
+      State
   other-modules:
       Paths_basics
   default-language: Haskell2010
@@ -111,6 +116,7 @@ executable basics-exe
     , containers
     , directory
     , filepath
+    , mtl
     , random
     , regex-posix >=0.95.2
     , time
@@ -133,6 +139,7 @@ test-suite basics-test
     , containers
     , directory
     , filepath
+    , mtl
     , random
     , regex-posix >=0.95.2
     , time

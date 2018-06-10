@@ -26,6 +26,7 @@ dependencies:
 - containers
 - directory
 - filepath
+- mtl
 - QuickCheck
 - random
 - regex-posix >= 0.95.2
