@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cfb42b8dd9538c168a6a4704b6c406820bed1f7f9fc9b6a41af2e3f71e4e7bcc
+-- hash: 408e9bb3495c9c3cfa6c18e45deb92d2dd12c97a5239166a3c7d6298f16c0ba3
 
 name:           basics
 version:        0.1.0.0
@@ -94,10 +94,17 @@ library
       PasswordAl
       GlobToRegex
       Logger
+      MonadLaws
+      MovieReview
       MultiplyTo
+      MyMonadPlus
       Random
+      RandomSupply
       SimpleState
       State
+      Supply
+      SupplyClass
+      VCard
   other-modules:
       Paths_basics
   default-language: Haskell2010
@@ -145,6 +152,7 @@ test-suite basics-test
     , time
   other-modules:
       DListSpec
+      MonadLawsSpec
       QC
       Spec
       Paths_basics
