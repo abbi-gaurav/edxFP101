@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 408e9bb3495c9c3cfa6c18e45deb92d2dd12c97a5239166a3c7d6298f16c0ba3
+-- hash: 91ed769754b85ae4b7917d1b978344929754887dce0577d0dd877a208a7cda0d
 
 name:           basics
 version:        0.1.0.0
@@ -93,6 +93,7 @@ library
       PasswdMap
       PasswordAl
       GlobToRegex
+      HandleIO
       Logger
       MonadLaws
       MovieReview
@@ -104,6 +105,7 @@ library
       State
       Supply
       SupplyClass
+      SupplyInstance
       VCard
   other-modules:
       Paths_basics
