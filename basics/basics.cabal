@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 91ed769754b85ae4b7917d1b978344929754887dce0577d0dd877a208a7cda0d
+-- hash: a5ae89c940aa38e8e7043cd4b79834e04e860ebe79ed5e888cd5284b0bf0e1f4
 
 name:           basics
 version:        0.1.0.0
@@ -95,12 +95,15 @@ library
       GlobToRegex
       HandleIO
       Logger
+      MonadHandle
+      MonadHandleIO
       MonadLaws
       MovieReview
       MultiplyTo
       MyMonadPlus
       Random
       RandomSupply
+      SafeHello
       SimpleState
       State
       Supply
