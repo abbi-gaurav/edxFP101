@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a5ae89c940aa38e8e7043cd4b79834e04e860ebe79ed5e888cd5284b0bf0e1f4
+-- hash: 408689cd49ece3ff0b5d7a00a37435f693557fdaf316556d29be3e745e96c769
 
 name:           basics
 version:        0.1.0.0
@@ -110,6 +110,7 @@ library
       SupplyClass
       SupplyInstance
       VCard
+      WriterIO
   other-modules:
       Paths_basics
   default-language: Haskell2010

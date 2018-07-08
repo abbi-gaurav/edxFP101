@@ -6,5 +6,5 @@ import System.IO (IOMode(..))
 safeHello :: MonadHandle h m => FilePath -> m ()
 safeHello path = do
   h <- openFile path WriteMode
-  hPutStrLn h "Hello from monadhandle"
+  hPutStrLn h "Hello from monad handle"
   hClose h
