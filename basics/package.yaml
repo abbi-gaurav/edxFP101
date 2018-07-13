@@ -27,6 +27,7 @@ dependencies:
 - directory
 - filepath
 - mtl
+- parsec
 - QuickCheck
 - random
 - regex-posix >= 0.95.2
@@ -46,6 +47,7 @@ library:
     - src/rwh/bar-code/
     - src/rwh/data-structures/
     - src/rwh/monads/
+    - src/rwh/parsec
 
 executables:
   basics-exe:

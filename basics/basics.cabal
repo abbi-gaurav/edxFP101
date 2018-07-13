@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 408689cd49ece3ff0b5d7a00a37435f693557fdaf316556d29be3e745e96c769
+-- hash: f13bf2b97a3fa1d14039331a039ef9786bc6452d45471d22d79d3f67bc449724
 
 name:           basics
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       src/rwh/bar-code/
       src/rwh/data-structures/
       src/rwh/monads/
+      src/rwh/parsec
   build-depends:
       QuickCheck
     , array
@@ -48,6 +49,7 @@ library
     , directory
     , filepath
     , mtl
+    , parsec
     , random
     , regex-posix >=0.95.2
     , time
@@ -111,6 +113,7 @@ library
       SupplyInstance
       VCard
       WriterIO
+      CSV1
   other-modules:
       Paths_basics
   default-language: Haskell2010
@@ -130,6 +133,7 @@ executable basics-exe
     , directory
     , filepath
     , mtl
+    , parsec
     , random
     , regex-posix >=0.95.2
     , time
@@ -153,6 +157,7 @@ test-suite basics-test
     , directory
     , filepath
     , mtl
+    , parsec
     , random
     , regex-posix >=0.95.2
     , time
