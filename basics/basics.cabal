@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f13bf2b97a3fa1d14039331a039ef9786bc6452d45471d22d79d3f67bc449724
+-- hash: 3bffd7f34114e5b71143a4e2754c004c1ffaf60b4386b8c9ffdf885284502c59
 
 name:           basics
 version:        0.1.0.0
@@ -114,6 +114,8 @@ library
       VCard
       WriterIO
       CSV1
+      CSV2
+      ParsecTutorial
   other-modules:
       Paths_basics
   default-language: Haskell2010
