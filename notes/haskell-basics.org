@@ -146,7 +146,14 @@ f.g = \x -> f (g x)
 - ~union~ is left-biased
 * Applicative
 - ~pure :: a -> ma~
-- ~<*> m (a->b) -> ma -> mb~ 
+- ~<*> f (a->b) -> fa -> fb~ 
+#+BEGIN_SRC haskell
+*ParsecTutorial> :t (,) <$> Just 1
+(,) <$> Just 1 :: Num a => Maybe (b -> (a, b))
+
+*ParsecTutorial> :t (,) <$> Just 1 <*> Just 2
+(,) <$> Just 1 <*> Just 2 :: (Num a2, Num a1) => Maybe (a1, a2)
+#+END_SRC
 * Monad
 - a type constructor ~m~
 - a chaining function ~ma -> (a -> mb) -> mb~

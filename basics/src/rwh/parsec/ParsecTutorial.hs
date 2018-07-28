@@ -10,6 +10,9 @@ import qualified Text.Parsec            as Parsec
 import           Data.Functor.Identity
 import           Text.Parsec.Error
 
+parse ::
+  Parsec.Stream s Identity t =>
+  Parsec.Parsec s () a -> s -> Either ParseError a
 parse rule text = Parsec.parse rule "(source)" text
 
 myParser :: Parsec.Parsec String () (String, String)
