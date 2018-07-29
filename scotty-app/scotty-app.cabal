@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ff69590282b5c6713de0f175018b63a1329148eda2632e31052948cbb8adb329
+-- hash: 51f4c3de6ace477662a4b95a1086adfd6441d77f50e674189bc9128b5df2cbf6
 
 name:           scotty-app
 version:        0.1.0.0
@@ -26,7 +26,10 @@ source-repository head
 
 library
   exposed-modules:
+      DummyActions
       Lib
+      User
+      UserActions
   other-modules:
       Paths_scotty_app
   hs-source-dirs:
