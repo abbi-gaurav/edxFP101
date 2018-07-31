@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4cf89aed6cd35ce9d9528e182af4224dfeb9db45714ca90acb49929b22d80335
+-- hash: b349948f65ef06c0fb2173ae9842e92d9694b01cc2bf388ac986fa4ff1e0da30
 
 name:           scotty-app
 version:        0.1.0.0
@@ -40,7 +40,13 @@ library
     , HDBC-sqlite3
     , aeson
     , base >=4.7 && <5
+    , data-default
+    , mtl
     , scotty
+    , text
+    , transformers
+    , wai
+    , warp
   default-language: Haskell2010
 
 executable scotty-app-exe
@@ -55,8 +61,14 @@ executable scotty-app-exe
     , HDBC-sqlite3
     , aeson
     , base >=4.7 && <5
+    , data-default
+    , mtl
     , scotty
     , scotty-app
+    , text
+    , transformers
+    , wai
+    , warp
   default-language: Haskell2010
 
 test-suite scotty-app-test
@@ -72,6 +84,12 @@ test-suite scotty-app-test
     , HDBC-sqlite3
     , aeson
     , base >=4.7 && <5
+    , data-default
+    , mtl
     , scotty
     , scotty-app
+    , text
+    , transformers
+    , wai
+    , warp
   default-language: Haskell2010

@@ -22,9 +22,15 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - aeson
 - base >= 4.7 && < 5
+- data-default
 - HDBC
 - HDBC-sqlite3
+- mtl
 - scotty
+- text
+- transformers
+- wai
+- warp
 
 library:
   source-dirs: src
