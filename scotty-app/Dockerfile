@@ -5,7 +5,7 @@ FROM haskell:8.2.2
 WORKDIR /app
 ADD . /app
 
-# Build and test our code, then install the “run-server” executable
+# Build and test our code, then install the “scotty-app-exe” executable
 RUN stack setup
 RUN stack build --copy-bins
 
