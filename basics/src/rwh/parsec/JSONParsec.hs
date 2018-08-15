@@ -38,6 +38,7 @@ p_bool :: CharParser () Bool
 p_bool = True      <$ string "true"
          <|> False <$ string "false"
 
+p_value_choice :: CharParser () JValue
 p_value_choice = value <* spaces
   where value = choice [ JString <$> p_string
                        , JNumber <$> p_number
@@ -60,10 +61,16 @@ p_string = between (char '\"') (char '\"') (many jchar)
                 <|> satisfy (`notElem` "\"\\")
 
 p_escape :: CharParser () Char
-p_escape = choice (zipWith decode "bnfrt\\\"/" "\b\n\f\r\t\\\"/")
-  where decode c r = r <$ char c
+p_escape = choice zipper
+  where
+    zipper :: [CharParser () Char]
+    zipper = zipWith decode "bnfrt\\\"/" "\b\n\f\r\t\\\"/"
+
+    decode :: Char -> Char -> CharParser () Char
+    decode c r = r <$ char c
 
 p_unicode  :: CharParser () Char
 p_unicode = char 'u' *> (decode <$> count 4 hexDigit)
-  where decode x = toEnum code
+  where decode :: String -> Char
+        decode x = toEnum code
           where ((code,_):_) = readHex x

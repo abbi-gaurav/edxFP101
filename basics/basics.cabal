@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 51ed45253872f514bb21acd5ae598648a1bc1a861485ff9b0313da8cda63132b
+-- hash: 122ed5d04172d5401e470f80c6499611ca067313462a0124bc99bbe9f62a4f3a
 
 name:           basics
 version:        0.1.0.0
@@ -117,7 +117,10 @@ library
       CSV2
       CSV6
       CSV9
+      FormApp
       FormParse
+      HttpRequestParser
+      JSONParsec
       ParsecTutorial
   other-modules:
       Paths_basics
