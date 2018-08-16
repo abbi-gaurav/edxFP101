@@ -47,8 +47,9 @@ library:
     - src/rwh/bar-code/
     - src/rwh/data-structures/
     - src/rwh/monads/
-    - src/rwh/parsec
-    - src/rwh/ffi
+    - src/rwh/parsec/
+    - src/rwh/ffi/
+    - src/rwh/mtl/
 
 executables:
   basics-exe:

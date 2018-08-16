@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dbd06a9c00148797a776c59e1c0309e7323f57acc36f68602dd9de10aaed992e
+-- hash: a6cb5c11a99a40fef983c839034600719dd1abacbca83d8ec5da79737e29e50b
 
 name:           basics
 version:        0.1.0.0
@@ -39,8 +39,9 @@ library
       src/rwh/bar-code/
       src/rwh/data-structures/
       src/rwh/monads/
-      src/rwh/parsec
-      src/rwh/ffi
+      src/rwh/parsec/
+      src/rwh/ffi/
+      src/rwh/mtl/
   build-depends:
       QuickCheck
     , array
@@ -124,6 +125,7 @@ library
       JSONParsec
       ParsecTutorial
       SimpleFFI
+      CountEntries
   other-modules:
       Paths_basics
   default-language: Haskell2010
