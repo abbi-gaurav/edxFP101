@@ -48,6 +48,7 @@ library:
     - src/rwh/data-structures/
     - src/rwh/monads/
     - src/rwh/parsec
+    - src/rwh/ffi
 
 executables:
   basics-exe:
