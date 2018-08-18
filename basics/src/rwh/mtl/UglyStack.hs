@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module UglyStack where
 
 import           Control.Monad.Reader
@@ -13,16 +14,20 @@ data AppState = AppState {
   deepestReached :: Int
   } deriving (Show)
 
-type App = ReaderT AppConfig (StateT AppState IO)
+newtype MyApp a = MyA {
+  runA :: ReaderT AppConfig (StateT AppState IO) a
+  }deriving (Applicative, Functor, Monad, MonadIO, MonadReader AppConfig, MonadState AppState)
+
+--type App = ReaderT AppConfig (StateT AppState IO)
 
 --runApp (constrainedCount 0 "src") 4
-runApp :: App a -> Int -> IO(a, AppState)
+runApp :: MyApp a -> Int -> IO(a, AppState)
 runApp k maxDepth =
   let config = AppConfig maxDepth
       state  = AppState 0
-  in runStateT (runReaderT k config) state
+  in runStateT (runReaderT (runA k) config) state
 
-constrainedCount :: Int -> FilePath -> App[(FilePath, Int)]
+constrainedCount :: Int -> FilePath -> MyApp[(FilePath, Int)]
 constrainedCount curDepth path = do
   contents <- liftIO . listDirectory $ path
   cfg <- ask
