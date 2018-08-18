@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b5451e6794e8e08c5a8ef9946592938b3fe604dcb4398f3a920513150858da9e
+-- hash: 7e9b1af68ef627b7cadbffd844b2a66630dfdfccd144359d8050b9dc6f0ef3e6
 
 name:           basics
 version:        0.1.0.0
@@ -127,6 +127,7 @@ library
       SimpleFFI
       CountEntries
       CountEntriesT
+      UglyStack
   other-modules:
       Paths_basics
   default-language: Haskell2010
