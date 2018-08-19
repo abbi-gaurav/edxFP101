@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cf4191b5411cb3042a8907421eba90c47c82515f301dfe955ffbc998ba14a393
+-- hash: 2c50a43a63cbae220a59bfb823e65320a6ee472748f4edef87ced4ddca7fa6e3
 
 name:           basics
 version:        0.1.0.0
@@ -128,6 +128,7 @@ library
       CountEntries
       CountEntriesT
       MaybeT
+      MaybeTParse
       UglyStack
   other-modules:
       Paths_basics
