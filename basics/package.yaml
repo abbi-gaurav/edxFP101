@@ -50,6 +50,7 @@ library:
     - src/rwh/parsec/
     - src/rwh/ffi/
     - src/rwh/mtl/
+    - src/problems/
 
 executables:
   basics-exe:
