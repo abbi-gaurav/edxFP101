@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7e9b1af68ef627b7cadbffd844b2a66630dfdfccd144359d8050b9dc6f0ef3e6
+-- hash: cf4191b5411cb3042a8907421eba90c47c82515f301dfe955ffbc998ba14a393
 
 name:           basics
 version:        0.1.0.0
@@ -127,6 +127,7 @@ library
       SimpleFFI
       CountEntries
       CountEntriesT
+      MaybeT
       UglyStack
   other-modules:
       Paths_basics
