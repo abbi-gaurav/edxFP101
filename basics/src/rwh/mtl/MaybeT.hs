@@ -7,6 +7,7 @@ import           Control.Applicative
 import           Control.Monad
 import           Control.Monad.State
 import           Control.Monad.Trans
+import           Control.Monad.Writer
 
 newtype MaybeT m a = MaybeT {
   runMaybeT :: m (Maybe a)
@@ -50,3 +51,18 @@ instance (MonadIO m) => MonadIO (MaybeT m) where
 instance (MonadState s m) => MonadState s (MaybeT m) where
   get = lift get
   put k = lift (put k)
+
+instance (Monoid w, MonadWriter w m) => MonadWriter w (MaybeT m) where
+  tell = lift. tell
+
+  listen m = MaybeT $ do
+    (result, log) <- listen (runMaybeT m)
+    case result of
+      Nothing    -> return Nothing
+      Just value -> return (Just (value, log))
+
+  pass m = MaybeT $ do
+    result <- runMaybeT m
+    case result of
+      Nothing           -> return Nothing
+      Just (value, log) -> pass (return (Just value, log))
