@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c21d95192a3b4e14b78cf4cb96eff96d53a8a5f76eda02f9dfc2711f4a4a5bfb
+-- hash: 9f06bf5f26e2fc4a653be9acc171be5a2baa2a8dfd4d5b57626810e63ae29410
 
 name:           basics
 version:        0.1.0.0
@@ -43,8 +43,12 @@ library
       src/rwh/ffi/
       src/rwh/mtl/
       src/problems/
+      src/rwh/error-handling/
+      src/rwh/hdbc/
   build-depends:
-      QuickCheck
+      HDBC
+    , HDBC-sqlite3 >=2.3.3.1
+    , QuickCheck
     , array
     , base >=4.7 && <5
     , bytestring
@@ -133,6 +137,13 @@ library
       MTComposition
       UglyStack
       Collatz
+      DivBy1
+      DivBy2
+      DivBy3
+      DivBy4
+      DivBy5
+      DivBy8
+      Query
   other-modules:
       Paths_basics
   default-language: Haskell2010
@@ -143,7 +154,9 @@ executable basics-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      QuickCheck
+      HDBC
+    , HDBC-sqlite3 >=2.3.3.1
+    , QuickCheck
     , array
     , base >=4.7 && <5
     , basics
@@ -167,7 +180,9 @@ test-suite basics-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      QuickCheck
+      HDBC
+    , HDBC-sqlite3 >=2.3.3.1
+    , QuickCheck
     , array
     , base >=4.7 && <5
     , basics

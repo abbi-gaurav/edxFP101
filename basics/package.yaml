@@ -26,6 +26,8 @@ dependencies:
 - containers
 - directory
 - filepath
+- HDBC
+- HDBC-sqlite3 >= 2.3.3.1
 - mtl
 - parsec
 - QuickCheck
@@ -51,6 +53,8 @@ library:
     - src/rwh/ffi/
     - src/rwh/mtl/
     - src/problems/
+    - src/rwh/error-handling/
+    - src/rwh/hdbc/
 
 executables:
   basics-exe:
