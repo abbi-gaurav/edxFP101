@@ -55,6 +55,7 @@ library:
     - src/problems/
     - src/rwh/error-handling/
     - src/rwh/hdbc/
+    - src/rwh/web-client
 
 executables:
   basics-exe:

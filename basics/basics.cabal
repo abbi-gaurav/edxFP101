@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9f06bf5f26e2fc4a653be9acc171be5a2baa2a8dfd4d5b57626810e63ae29410
+-- hash: e532efdfb2ea82b7b235f1f8a1257c96da0649ae700849867257745d174e26e6
 
 name:           basics
 version:        0.1.0.0
@@ -45,6 +45,7 @@ library
       src/problems/
       src/rwh/error-handling/
       src/rwh/hdbc/
+      src/rwh/web-client
   build-depends:
       HDBC
     , HDBC-sqlite3 >=2.3.3.1
@@ -144,6 +145,8 @@ library
       DivBy5
       DivBy8
       Query
+      PodDB
+      PodTypes
   other-modules:
       Paths_basics
   default-language: Haskell2010
