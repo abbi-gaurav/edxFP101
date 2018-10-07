@@ -26,9 +26,13 @@ dependencies:
 - containers
 - directory
 - filepath
+- HaXml
 - HDBC
 - HDBC-sqlite3 >= 2.3.3.1
+- HTTP
 - mtl
+- network
+- network-uri
 - parsec
 - QuickCheck
 - random
@@ -58,15 +62,11 @@ library:
     - src/rwh/web-client
 
 executables:
-  basics-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+  pods-exe:
+    main: Main.hs
+    source-dirs: src/rwh/web-client
     dependencies:
-    - basics
+    - basics    
 
 tests:
   basics-test:
