@@ -2,6 +2,7 @@ module NiceFork where
 
 import           Control.Concurrent
 import           Control.Exception  (Exception, try)
+import           Control.Monad      (join)
 import qualified Data.Map           as M
 
 data ThreadException = KilledByUncaughtException deriving (Eq,Show)
@@ -49,6 +50,13 @@ waitFor (Mgr mVar) tid = do
   case maybeDone of
     Nothing -> return Nothing
     Just st -> Just `fmap` takeMVar st
+
+waitFor2 :: ThreadManager -> ThreadId -> IO (Maybe ThreadStatus)
+waitFor2 (Mgr mVar) tid =
+  join . modifyMVar mVar $ \m ->
+                             return $ case M.updateLookupWithKey (\_ _ -> Nothing) tid m of
+                                        (Nothing , _) -> (m, return Nothing)
+                                        (Just st, m') -> (m', Just `fmap` takeMVar st)
 
 -- | Block until all managed threads terminate
 waitAll :: ThreadManager -> IO ()
