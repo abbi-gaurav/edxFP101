@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f2efc05adbeb1d28b22bbc83809dd3eca9a0d63aee6be1666756f116f57ac76c
+-- hash: b209f64ba4fc76ac72314b2d20ea3d7901ff346def5e2cf2ea57a8923ea1f240
 
 name:           basics
 version:        0.1.0.0
@@ -65,6 +65,7 @@ library
     , random
     , regex-posix >=0.95.2
     , time
+    , zlib
   exposed-modules:
       Lib
       Lockers
@@ -188,6 +189,7 @@ executable pods-exe
     , random
     , regex-posix >=0.95.2
     , time
+    , zlib
   default-language: Haskell2010
 
 test-suite basics-test
@@ -216,6 +218,7 @@ test-suite basics-test
     , random
     , regex-posix >=0.95.2
     , time
+    , zlib
   other-modules:
       DListSpec
       MonadLawsSpec

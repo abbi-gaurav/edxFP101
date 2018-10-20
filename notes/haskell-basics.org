@@ -158,3 +158,9 @@ f.g = \x -> f (g x)
 - a type constructor ~m~
 - a chaining function ~ma -> (a -> mb) -> mb~
 - a injector ~a -> ma~
+* Parallel and concurrent programming
+** ~modifyVar pattern~
+- acquire a resource
+- pass the resource to a compute
+- *always* release the resource no matter what
+- if there is an error, rethrow the error to the application

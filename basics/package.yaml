@@ -38,6 +38,7 @@ dependencies:
 - random
 - regex-posix >= 0.95.2
 - time
+- zlib
 
 library:
   source-dirs:
