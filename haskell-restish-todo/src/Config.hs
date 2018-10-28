@@ -6,6 +6,7 @@
 
 module Config where
 
+import           Control.Monad         (join)
 import           Data.Aeson
 import           Data.Aeson.Types      (parseEither)
 import           Data.Bifunctor        (bimap, first, second)
@@ -14,6 +15,7 @@ import           Data.Functor.Identity
 import qualified Data.Text.IO          as DTI
 import           GHC.Generics
 import           Text.Parsec.Error     (ParseError)
+import           Text.Read             (readMaybe)
 import           Text.Toml             (parseTomlDoc)
 
 data AppConfig = AppConfig{
@@ -24,6 +26,8 @@ data AppConfig = AppConfig{
 -- Todo : improve with newtype? use existing types
 type Host = String
 type Port = Integer
+
+newtype ProcessEnvironment = ProcessEnvironment {getProcessEnv :: [(String,String)]} deriving Eq
 
 data FancyAppConfig f = FancyAppConfig {
   facHost :: f Host,
@@ -88,3 +92,17 @@ instance FromTOMLFile PartialAppConfig where
                                          Right (Right cfg) -> Right cfg
                                          Right (Left err)  -> Left (ConfigParseError err)
                                          Left err          -> Left err
+
+class FromENV cfg where
+  fromEnv :: ProcessEnvironment -> IO (Either ConfigurationError cfg)
+
+instance FromENV PartialAppConfig where
+  fromEnv pEnv = pure $ Right $ FancyAppConfig { facHost = prop "host",
+                                         facPort = join $ fmap readMaybe $ prop "port"
+                                       }
+                 where
+                   env :: [(String,String)]
+                   env = getProcessEnv pEnv
+
+                   prop :: String -> Maybe String
+                   prop = flip lookup env
