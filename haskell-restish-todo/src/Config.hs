@@ -7,10 +7,14 @@
 module Config where
 
 import           Data.Aeson
-import           Data.Bifunctor        (first)
+import           Data.Aeson.Types      (parseEither)
+import           Data.Bifunctor        (bimap, first, second)
 import qualified Data.ByteString.Lazy  as DBL
 import           Data.Functor.Identity
+import qualified Data.Text.IO          as DTI
 import           GHC.Generics
+import           Text.Parsec.Error     (ParseError)
+import           Text.Toml             (parseTomlDoc)
 
 data AppConfig = AppConfig{
   acHost :: String,
@@ -28,6 +32,7 @@ data FancyAppConfig f = FancyAppConfig {
 
 
 data ConfigurationError = ConfigParseError String
+                        | TOMLParseError ParseError
 {-
 {
     "facHost" : "ssss",
@@ -71,3 +76,15 @@ instance FromJSONFile PartialAppConfig where
     where
       decodeAndTransformError :: DBL.ByteString -> Either ConfigurationError PartialAppConfig
       decodeAndTransformError = first ConfigParseError . eitherDecode
+
+class (FromJSONFile cfg) => FromTOMLFile cfg where
+  fromTOMLFile :: FilePath -> IO (Either ConfigurationError cfg)
+
+instance FromTOMLFile PartialAppConfig where
+  fromTOMLFile path = DTI.readFile path
+                      >>= pure . first TOMLParseError . parseTomlDoc ""
+                      >>= pure . second (parseEither parseJSON . toJSON)
+                      >>= \v -> pure $ case v of
+                                         Right (Right cfg) -> Right cfg
+                                         Right (Left err)  -> Left (ConfigParseError err)
+                                         Left err          -> Left err

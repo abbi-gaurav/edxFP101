@@ -27,6 +27,9 @@ library:
   dependencies:
   - aeson
   - bytestring
+  - htoml
+  - parsec
+  - text
 
 executables:
   haskell-restish-todo-exe:
