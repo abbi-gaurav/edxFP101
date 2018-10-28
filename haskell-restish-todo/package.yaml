@@ -35,6 +35,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - haskell-restish-todo
+    - servant-server
+    - optparse-applicative
 
 tests:
   haskell-restish-todo-test:
