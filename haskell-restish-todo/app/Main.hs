@@ -2,16 +2,13 @@
 
 module Main where
 
+import           Config
 import           Control.Monad       (join)
 import           Data.Semigroup      ((<>))
 import           Lib
 import           Options.Applicative (CommandFields, Mod, Parser, ParserInfo,
                                       argument, command, execParser, idm, info,
                                       str, subparser)
-
--- Todo : improve with newtype? use existing types
-type Host = String
-type Port = Integer
 
 newtype Options = Options {cms :: Command}
 data Command = Serve Host Port

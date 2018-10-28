@@ -1,6 +1,8 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE OverloadedStrings #-}
-
+{-# LANGUAGE DeriveAnyClass     #-}
+{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE FlexibleInstances  #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Config where
 
@@ -8,6 +10,7 @@ import           Data.Aeson
 import           Data.Bifunctor        (first)
 import qualified Data.ByteString.Lazy  as DBL
 import           Data.Functor.Identity
+import           GHC.Generics
 
 data AppConfig = AppConfig{
   acHost :: String,
@@ -23,10 +26,27 @@ data FancyAppConfig f = FancyAppConfig {
   facPort :: f Port
   }
 
-data ConfigurationError = ConfigParseError String
 
+data ConfigurationError = ConfigParseError String
+{-
+{
+    "facHost" : "ssss",
+    "facPort" : 1234
+}
+
+ cfg = ( eitherDecode <$> DBL.readFile ("/tmp/test.json" :: FilePath) :: IO (Either String (FancyAppConfig Identity)))
+-}
 type CompleteAppConfig = FancyAppConfig Identity
+deriving instance Generic CompleteAppConfig
+deriving instance Eq CompleteAppConfig
+deriving instance Show CompleteAppConfig
+deriving instance FromJSON CompleteAppConfig
+
 type PartialAppConfig = FancyAppConfig Maybe
+deriving instance Generic PartialAppConfig
+deriving instance Eq PartialAppConfig
+deriving instance Show PartialAppConfig
+deriving instance FromJSON PartialAppConfig
 
 class HasDefaultValue a where
   defaultValue :: a
@@ -42,13 +62,6 @@ instance HasDefaultValue (FancyAppConfig Identity) where
 
 instance HasDefaultValue (FancyAppConfig Maybe) where
   defaultValue = FancyAppConfig (Just defaultHost) (Just defaultPort)
-
-instance FromJSON PartialAppConfig where
-  parseJSON = withObject "cfg" parseObj
-    where
-      parseObj obj = obj .: "host"
-                     >>= \host -> obj .: "port"
-                     >>= \port -> pure $ FancyAppConfig {facHost = host, facPort = port}
 
 class (FromJSON cfg) => FromJSONFile cfg where
   fromJSONFile :: FilePath -> IO (Either ConfigurationError cfg)
