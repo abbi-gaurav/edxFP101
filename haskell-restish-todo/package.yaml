@@ -29,6 +29,7 @@ library:
   - bytestring
   - htoml
   - parsec
+  - system-filepath
   - text
 
 executables:
