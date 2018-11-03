@@ -66,20 +66,11 @@ deriving instance Eq PartialAppConfig
 deriving instance Show PartialAppConfig
 deriving instance FromJSON PartialAppConfig
 
-class HasDefaultValue a where
-  defaultValue :: a
-
 defaultHost :: Host
 defaultHost = "localhost"
 
 defaultPort :: Port
 defaultPort = 5000
-
-instance HasDefaultValue (FancyAppConfig Identity) where
-  defaultValue = FancyAppConfig (Identity defaultHost) (Identity defaultPort)
-
-instance HasDefaultValue (FancyAppConfig Maybe) where
-  defaultValue = FancyAppConfig (Just defaultHost) (Just defaultPort)
 
 class (FromJSON cfg) => FromJSONFile cfg where
   fromJSONFile :: FilePath -> IO (Either ConfigurationError cfg)
@@ -116,16 +107,24 @@ instance FromENV PartialAppConfig where
                    prop :: String -> Maybe String
                    prop = flip lookup env
 
-class MergeOverridable a where
-  mergeOverride :: a -> a -> a
 
-instance MergeOverridable PartialAppConfig where
-  mergeOverride a b = FancyAppConfig { facHost = resolveMaybes facHost
-                                     , facPort = resolveMaybes facPort
-                                     }
-                      where
-                        resolveMaybes :: (PartialAppConfig -> Maybe a) -> Maybe a
-                        resolveMaybes fn = (fn b) <|> (fn a)
+instance Semigroup CompleteAppConfig where
+  a <> b = b
+
+instance Monoid CompleteAppConfig where
+  mempty = FancyAppConfig (Identity defaultHost) (Identity defaultPort)
+
+-- | value from b overrides
+instance Semigroup PartialAppConfig where
+  a <> b = FancyAppConfig { facHost = resolveMaybes facHost
+                          , facPort = resolveMaybes facPort
+                          }
+           where
+             resolveMaybes :: (PartialAppConfig -> Maybe c) -> Maybe c
+             resolveMaybes getter = maybe (getter a) Just (getter b)
+
+instance Monoid PartialAppConfig where
+  mempty = FancyAppConfig Nothing Nothing
 
 mergeInPartial :: CompleteAppConfig -> PartialAppConfig -> CompleteAppConfig
 mergeInPartial c p = FancyAppConfig { facHost = fromMaybe (facHost c) (Identity <$> facHost p),
@@ -141,7 +140,7 @@ buildConfigWithDefault :: CompleteAppConfig -> [PartialAppConfig] -> CompleteApp
 buildConfigWithDefault orig partials = orig `mergeInPartial` combinedPartials
   where
     combinedPartials :: PartialAppConfig
-    combinedPartials = Prelude.foldl mergeOverride (defaultValue :: PartialAppConfig) partials
+    combinedPartials = Prelude.foldl (<>) (mempty :: PartialAppConfig) partials
 
 makeAppConfig :: ProcessEnvironment -> FP.FilePath -> IO (Either ConfigurationError CompleteAppConfig)
 makeAppConfig env path = try generateConfig
@@ -178,4 +177,4 @@ makeAppConfig env path = try generateConfig
     generateConfig = when pathExtensionIsInvalid (throw pathInvalidExtensionErr)
                      >> getFileConfig
                      >>= rightOrThrow
-                     >>= \fileCfg -> pure (buildConfigWithDefault (defaultValue :: CompleteAppConfig)[fileCfg, envCfg])
+                     >>= \fileCfg -> pure (buildConfigWithDefault (mempty :: CompleteAppConfig)[fileCfg, envCfg])
