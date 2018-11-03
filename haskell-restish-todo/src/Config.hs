@@ -98,7 +98,7 @@ class FromENV cfg where
 
 instance FromENV PartialAppConfig where
   fromEnv pEnv = FancyAppConfig { facHost = prop "host",
-                                  facPort = join $ fmap readMaybe $ prop "port"
+                                  facPort = join $ readMaybe <$> prop "port"
                                 }
                  where
                    env :: [(String,String)]
@@ -121,7 +121,7 @@ instance Semigroup PartialAppConfig where
                           }
            where
              resolveMaybes :: (PartialAppConfig -> Maybe c) -> Maybe c
-             resolveMaybes getter = maybe (getter a) Just (getter b)
+             resolveMaybes getter = getter b <|> getter a
 
 instance Monoid PartialAppConfig where
   mempty = FancyAppConfig Nothing Nothing
@@ -154,10 +154,10 @@ makeAppConfig env path = try generateConfig
     isTOMLExtension = (== "toml")
 
     isJSONFile :: Bool
-    isJSONFile = maybe False id $ (isJsonExtension . unpack) <$> extension
+    isJSONFile = fromMaybe False $ (isJsonExtension . unpack) <$> extension
 
     isTOMLFile :: Bool
-    isTOMLFile = maybe False id $ (isTOMLExtension . unpack) <$> extension
+    isTOMLFile = fromMaybe False $ (isTOMLExtension . unpack) <$> extension
 
     pathExtensionIsInvalid :: Bool
     pathExtensionIsInvalid = not $ isJSONFile || isTOMLFile
@@ -166,12 +166,11 @@ makeAppConfig env path = try generateConfig
     pathInvalidExtensionErr = InvalidPath path "Path is invalid (must be either .json or .toml patg)"
 
     envCfg :: PartialAppConfig
-    envCfg = (fromEnv env :: PartialAppConfig)
+    envCfg = fromEnv env :: PartialAppConfig
 
     getFileConfig :: IO (Either ConfigurationError PartialAppConfig)
-    getFileConfig = case isJSONFile of
-                      True  -> fromJSONFile (FCOS.encodeString path)
-                      False -> fromJSONFile (FCOS.encodeString path)
+    getFileConfig = if isJSONFile then fromJSONFile (FCOS.encodeString path) else
+                      fromJSONFile (FCOS.encodeString path)
 
     generateConfig :: IO CompleteAppConfig
     generateConfig = when pathExtensionIsInvalid (throw pathInvalidExtensionErr)
