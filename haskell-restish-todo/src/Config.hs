@@ -73,25 +73,30 @@ defaultPort :: Port
 defaultPort = 5000
 
 class (FromJSON cfg) => FromJSONFile cfg where
-  fromJSONFile :: FilePath -> IO (Either ConfigurationError cfg)
+  fromJSONFile :: FP.FilePath -> IO (Either ConfigurationError cfg)
 
 instance FromJSONFile PartialAppConfig where
-  fromJSONFile path = decodeAndTransformError <$> DBL.readFile path
+  fromJSONFile path = decodeAndTransformError <$> DBL.readFile convertedPath
     where
+      convertedPath = FCOS.encodeString path
+
       decodeAndTransformError :: DBL.ByteString -> Either ConfigurationError PartialAppConfig
       decodeAndTransformError = first ConfigParseError . eitherDecode
 
 class (FromJSONFile cfg) => FromTOMLFile cfg where
-  fromTOMLFile :: FilePath -> IO (Either ConfigurationError cfg)
+  fromTOMLFile :: FP.FilePath -> IO (Either ConfigurationError cfg)
 
 instance FromTOMLFile PartialAppConfig where
-  fromTOMLFile path = DTI.readFile path
-                      >>= pure . first TOMLParseError . parseTomlDoc ""
-                      >>= pure . second (parseEither parseJSON . toJSON)
-                      >>= \v -> pure $ case v of
-                                         Right (Right cfg) -> Right cfg
-                                         Right (Left err)  -> Left (ConfigParseError err)
-                                         Left err          -> Left err
+  fromTOMLFile path = flattenEither . convertAndParse . parseTOML
+                      <$> DTI.readFile convertedPath
+    where
+      convertedPath = FCOS.encodeString path
+      parseTOML = first TOMLParseError . parseTomlDoc ""
+      convertAndParse = second (parseEither parseJSON . toJSON)
+      flattenEither v = case v of
+                          Right (Right cfg) -> Right cfg
+                          Right (Left err)  -> Left (ConfigParseError err)
+                          Left err          -> Left err
 
 class FromENV cfg where
   fromEnv :: ProcessEnvironment -> cfg
@@ -142,18 +147,20 @@ buildConfigWithDefault orig partials = orig `mergeInPartial` combinedPartials
     combinedPartials :: PartialAppConfig
     combinedPartials = Prelude.foldl (<>) (mempty :: PartialAppConfig) partials
 
-makeAppConfig :: ProcessEnvironment -> FP.FilePath -> IO (Either ConfigurationError CompleteAppConfig)
-makeAppConfig env path = try generateConfig
+makeAppConfig :: Maybe FilePath -> ProcessEnvironment -> IO (Either ConfigurationError CompleteAppConfig)
+makeAppConfig maybeStrPath env = try generateConfig
   where
+    maybePath :: Maybe FCOS.FilePath
+    maybePath = FCOS.fromText . pack <$> maybeStrPath
+
     extension :: Maybe Text
-    extension = FP.extension path
+    extension = join $ FP.extension <$> maybePath
 
     isJsonExtension :: String -> Bool
     isJsonExtension = (== "json")
 
     isTOMLExtension = (== "toml")
 
-    isJSONFile :: Bool
     isJSONFile = fromMaybe False $ (isJsonExtension . unpack) <$> extension
 
     isTOMLFile :: Bool
@@ -163,17 +170,25 @@ makeAppConfig env path = try generateConfig
     pathExtensionIsInvalid = not $ isJSONFile || isTOMLFile
 
     pathInvalidExtensionErr :: ConfigurationError
-    pathInvalidExtensionErr = InvalidPath path "Path is invalid (must be either .json or .toml patg)"
+    pathInvalidExtensionErr = InvalidPath (fromMaybe "<no path>" maybePath) "Path is invalid (must be either .json or .toml patg)"
 
     envCfg :: PartialAppConfig
     envCfg = fromEnv env :: PartialAppConfig
 
-    getFileConfig :: IO (Either ConfigurationError PartialAppConfig)
-    getFileConfig = if isJSONFile then fromJSONFile (FCOS.encodeString path) else
-                      fromJSONFile (FCOS.encodeString path)
+    getFileConfig :: FCOS.FilePath -> IO (Either ConfigurationError PartialAppConfig)
+    getFileConfig = if isJSONFile then fromJSONFile else fromTOMLFile
+
+    fullySpecifiedPartialCfg :: CompleteAppConfig
+    fullySpecifiedPartialCfg = mergeInPartial mempty mempty
+
+    buildFromEnv :: IO CompleteAppConfig
+    buildFromEnv = pure $ mergeInPartial fullySpecifiedPartialCfg envCfg
 
     generateConfig :: IO CompleteAppConfig
-    generateConfig = when pathExtensionIsInvalid (throw pathInvalidExtensionErr)
-                     >> getFileConfig
-                     >>= rightOrThrow
-                     >>= \fileCfg -> pure (buildConfigWithDefault (mempty :: CompleteAppConfig)[fileCfg, envCfg])
+    generateConfig = maybe buildFromEnv buildFromPathAndEnv maybePath
+
+
+    buildFromPathAndEnv path = when pathExtensionIsInvalid (throw pathInvalidExtensionErr)
+                               >> getFileConfig path
+                               >>= rightOrThrow
+                               >>= \fileCfg -> pure (buildConfigWithDefault (mempty :: CompleteAppConfig)[fileCfg, envCfg])

@@ -23,10 +23,13 @@ dependencies:
 - base >= 4.7 && < 5
 
 library:
-  source-dirs: src
+  source-dirs:
+  - src
+  - test # for intero issue
   dependencies:
   - aeson
   - bytestring
+  - hspec # for intero issue
   - htoml
   - parsec
   - system-filepath
@@ -44,6 +47,7 @@ executables:
     - haskell-restish-todo
     - servant-server
     - optparse-applicative
+    - pretty-simple
 
 tests:
   haskell-restish-todo-test:
@@ -55,3 +59,14 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - haskell-restish-todo
+    - hspec
+  unit:
+    main: Spec.hs
+    source-dirs: test/unit
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - haskell-restish-todo
+    - hspec

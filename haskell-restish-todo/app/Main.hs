@@ -6,34 +6,69 @@ import           Config
 import           Control.Monad       (join)
 import           Data.Semigroup      ((<>))
 import           Lib
-import           Options.Applicative (CommandFields, Mod, Parser, ParserInfo,
-                                      argument, command, execParser, idm, info,
-                                      str, subparser)
+import           Options.Applicative
+import           System.Environment  (getEnvironment)
+import           Text.Pretty.Simple  (pPrint)
 
-newtype Options = Options {cms :: Command}
-data Command = Serve Host Port
+data Options = Options {
+  cfgPath :: Maybe FilePath,
+  cmd     :: Command
+  }
+data Command = Serve
+             | ShowConfig deriving Eq
+
+parseCommands :: Parser Command
+parseCommands = subparser commands
+  where
+    serverCmd :: ParserInfo Command
+    serverCmd = info (pure Serve) (progDesc "Start the server")
+
+    showConfigCmd :: ParserInfo Command
+    showConfigCmd = info (pure ShowConfig) (progDesc "Show the configuration")
+
+    commands :: Mod CommandFields Command
+    commands = command "server" serverCmd
+               <> command "show-config" showConfigCmd
+
+parseOptions :: Parser (Maybe FilePath)
+parseOptions = optional
+               $ strOption (long "config"
+                           <> short 'c'
+                           <> metavar "FILENAME"
+                           <> help "Configuration file (.json/.toml)")
+
+parseCmdLine :: Parser Options
+parseCmdLine = Options <$> parseOptions <*> parseCommands
+
+pullEnvironment :: IO ProcessEnvironment
+pullEnvironment = ProcessEnvironment <$> getEnvironment
+
+runServer :: Options -> IO ()
+runServer Options{cfgPath=path} = pullEnvironment
+                                   >>= makeAppConfig path
+                                   >> server
+
+showConfig :: Options -> IO ()
+showConfig Options{cfgPath=path} = pullEnvironment
+                                   >>= makeAppConfig path
+                                   >>= pPrint
 
 -- | Start up the server and serve requests
 server :: IO ()
 server = putStrLn "<SERVER START>"
 
--- | CLI options parser
-opts :: Parser (IO ())
-opts = subparser commands
-  where
-    -- | IO action that produces an IO action.
-    --   This was necessary due to using optparse-applicative like I am, by returning an IO action straight after `info` in serverCmd
-    serverAction :: Parser (IO ())
-    serverAction = pure server
-
-    serverCmd :: ParserInfo (IO ())
-    serverCmd = info (serverAction) idm
-
-    commands :: Mod CommandFields (IO ())
-    commands = command "server" serverCmd
 
 main :: IO ()
-main = join $ execParser parser
+main = parseOptions
+       >>= process
   where
-    parser::ParserInfo (IO ())
-    parser = info opts idm
+    cmdParser :: ParserInfo Options
+    cmdParser = info parseCmdLine idm
+
+    parseOptions :: IO Options
+    parseOptions = execParser cmdParser
+
+    process :: Options -> IO ()
+    process opts = case cmd opts of
+                     Serve      -> runServer opts
+                     ShowConfig -> showConfig opts
