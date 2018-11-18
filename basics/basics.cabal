@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b209f64ba4fc76ac72314b2d20ea3d7901ff346def5e2cf2ea57a8923ea1f240
+-- hash: 20a219aec1449584d47e9d160585f5cceb0536901eb4b57edff898e2678f646f
 
 name:           basics
 version:        0.1.0.0
@@ -46,6 +46,7 @@ library
       src/rwh/error-handling/
       src/rwh/hdbc/
       src/rwh/web-client
+      src/monoids/
   build-depends:
       HDBC
     , HDBC-sqlite3 >=2.3.3.1
@@ -155,6 +156,7 @@ library
       PodDownload
       PodParser
       PodTypes
+      RandomAccess
   other-modules:
       Paths_basics
   default-language: Haskell2010

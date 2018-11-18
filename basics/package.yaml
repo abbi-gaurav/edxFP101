@@ -61,6 +61,7 @@ library:
     - src/rwh/error-handling/
     - src/rwh/hdbc/
     - src/rwh/web-client
+    - src/monoids/
 
 executables:
   pods-exe:
