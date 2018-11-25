@@ -123,3 +123,23 @@ instance Validatable (PartialTask state) where
       checkDescription :: (PartialTask state) -> Maybe ValidationError
       --it becomes a partial fn until '.'
       checkDescription = maybe (Just (MissingField taskDescField)) (notEmptyIfPresent taskDescField) . psTaskDesc
+
+
+-----------------
+-- Components --
+-----------------
+
+class Component c where
+  start :: c -> IO ()
+  stop :: c -> IO ()
+
+newtype TaskID = TaskID { getTaskID :: DT.Text } deriving (Eq, Read, Show)
+
+data TaskStoreError = NoSuchIdError TaskID | UnexpectedError DT.Text deriving (Eq, Read, Show)
+
+class Component c => TaskStore c where
+  persistTask :: c -> Validated (FullySpecifiedTask state) -> Either TaskStoreError (FullySpecifiedTask state)
+  completeTask :: c -> TaskID -> Either TaskStoreError CompletedTask
+  getTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
+  updateTask :: c -> TaskID -> PartialTask state -> Either TaskStoreError (FullySpecifiedTask state)
+  deletTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
