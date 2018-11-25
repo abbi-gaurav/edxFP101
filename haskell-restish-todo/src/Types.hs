@@ -51,3 +51,15 @@ deriving instance Show NotStartedPartialTask
 type NotStartedTask = Task Identity NotStarted
 deriving instance Eq NotStartedTask
 deriving instance Show NotStartedTask
+
+
+
+newtype FieldName = FieldName {getFieldName :: Text} deriving (Eq, Read, Show)
+
+data ValidationError = InvalidField FieldName
+                     | MissingField FieldName deriving (Eq, Read, Show)
+
+data Validated t = Validated t
+
+class Validatable t where
+  validate :: t -> Either ValidationError (Validated t)
