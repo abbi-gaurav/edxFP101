@@ -10,8 +10,10 @@
 
 module Types where
 
-import           Data.Functor.Identity
-import           Data.Text
+import           Data.Either           (isRight)
+import           Data.Functor.Identity (Identity (..))
+import           Data.Maybe            (fromJust, isJust)
+import qualified Data.Text             as DT
 
 data Finished = FinishedTask deriving (Eq, Read, Show)
 data InProgress = InProgressTask deriving (Eq, Read, Show)
@@ -24,8 +26,8 @@ data TaskState = NotStarted
 type Complete f = f Identity
 type Partial f = f Maybe
 
-newtype TaskName = TaskName {getTName :: Text} deriving (Eq, Show)
-newtype TaskDesc = TaskDesc {getTDesc :: Text} deriving (Eq, Show)
+newtype TaskName = TaskName {getTName :: DT.Text} deriving (Eq, Show)
+newtype TaskDesc = TaskDesc {getTDesc :: DT.Text} deriving (Eq, Show)
 
 data Task f state = Task { tName        :: f TaskName
                          , tDescription :: f TaskDesc
@@ -54,12 +56,70 @@ deriving instance Show NotStartedTask
 
 
 
-newtype FieldName = FieldName {getFieldName :: Text} deriving (Eq, Read, Show)
+newtype FieldName = FieldName {getFieldName :: DT.Text} deriving (Eq, Read, Show)
 
 data ValidationError = InvalidField FieldName
                      | MissingField FieldName deriving (Eq, Read, Show)
 
+type ValidationCheck t = t -> Maybe ValidationError
+
 data Validated t = Validated t
 
 class Validatable t where
-  validate :: t -> Either ValidationError (Validated t)
+  isValid :: t -> Bool
+  isValid = either (const False) (const True) . validate
+
+  validate :: t -> Either [ValidationError] (Validated t)
+  validate t = if null errors then Right (Validated t) else Left errors
+    where
+      checkResults :: [Maybe ValidationError]
+      checkResults = [check t | check <- validationChecks]
+
+      errors :: [ValidationError]
+      errors = [fromJust e | e <- checkResults, isJust e]
+
+  validationChecks :: [ValidationCheck t]
+
+type FullySpecifiedTask = Task Identity
+type PartialTask = Task Maybe
+
+taskNameField :: FieldName
+taskNameField = FieldName "name"
+
+taskDescField :: FieldName
+taskDescField = FieldName "description"
+
+fsTaskName :: FullySpecifiedTask state -> DT.Text
+fsTaskName = DT.strip . getTName . runIdentity . tName
+
+fsTaskDesc :: FullySpecifiedTask state -> DT.Text
+fsTaskDesc = DT.strip . getTDesc . runIdentity . tDescription
+
+instance Validatable (FullySpecifiedTask state) where
+  validationChecks = [checkName, checkDescription]
+    where
+      checkName :: (FullySpecifiedTask state) -> Maybe ValidationError
+      checkName t = if DT.null (fsTaskName t) then Just (InvalidField taskNameField) else Nothing
+
+      checkDescription :: (FullySpecifiedTask state) -> Maybe ValidationError
+      checkDescription t = if DT.null (fsTaskDesc t) then Just (InvalidField taskDescField) else Nothing
+
+psTaskName :: PartialTask state -> Maybe DT.Text
+psTaskName pt = (DT.strip . getTName) <$> tName pt
+
+psTaskDesc :: PartialTask state -> Maybe DT.Text
+psTaskDesc pt = (DT.strip . getTDesc) <$> tDescription pt
+
+instance Validatable (PartialTask state) where
+  validationChecks = [checkName, checkDescription]
+    where
+      notEmptyIfPresent :: FieldName -> DT.Text -> Maybe ValidationError
+      notEmptyIfPresent fn v  = if DT.null v then Just (InvalidField fn) else Nothing
+
+      checkName :: (PartialTask state) -> Maybe ValidationError
+      --it becomes a partial fn until '.'
+      checkName = maybe (Just (MissingField taskNameField)) (notEmptyIfPresent taskNameField) . psTaskName
+
+      checkDescription :: (PartialTask state) -> Maybe ValidationError
+      --it becomes a partial fn until '.'
+      checkDescription = maybe (Just (MissingField taskDescField)) (notEmptyIfPresent taskDescField) . psTaskDesc
