@@ -34,6 +34,7 @@ library:
   - parsec
   - system-filepath
   - text
+  - uuid
 
 executables:
   haskell-restish-todo-exe:

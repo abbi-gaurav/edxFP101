@@ -14,6 +14,7 @@ import           Data.Either           (isRight)
 import           Data.Functor.Identity (Identity (..))
 import           Data.Maybe            (fromJust, isJust)
 import qualified Data.Text             as DT
+import           Data.UUID             (UUID)
 
 data Finished = FinishedTask deriving (Eq, Read, Show)
 data InProgress = InProgressTask deriving (Eq, Read, Show)
@@ -137,8 +138,12 @@ newtype TaskID = TaskID { getTaskID :: DT.Text } deriving (Eq, Read, Show)
 
 data TaskStoreError = NoSuchIdError TaskID | UnexpectedError DT.Text deriving (Eq, Read, Show)
 
+data WithID a where
+  UUIDID :: UUID -> a -> WithID a
+  IntID :: Int -> a -> WithID a
+
 class Component c => TaskStore c where
-  persistTask :: c -> Validated (FullySpecifiedTask state) -> Either TaskStoreError (FullySpecifiedTask state)
+  persistTask :: c -> Validated (FullySpecifiedTask state) -> Either TaskStoreError (WithID (FullySpecifiedTask state))
   completeTask :: c -> TaskID -> Either TaskStoreError CompletedTask
   getTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
   updateTask :: c -> TaskID -> PartialTask state -> Either TaskStoreError (FullySpecifiedTask state)
