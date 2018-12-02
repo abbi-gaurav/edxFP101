@@ -148,3 +148,4 @@ class Component c => TaskStore c where
   getTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
   updateTask :: c -> TaskID -> PartialTask state -> Either TaskStoreError (FullySpecifiedTask state)
   deletTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
+

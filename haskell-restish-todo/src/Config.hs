@@ -1,8 +1,10 @@
-{-# LANGUAGE DeriveAnyClass     #-}
-{-# LANGUAGE DeriveGeneric      #-}
-{-# LANGUAGE FlexibleInstances  #-}
-{-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveAnyClass        #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE InstanceSigs          #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE StandaloneDeriving    #-}
 
 module Config where
 
@@ -35,10 +37,14 @@ type Port = Integer
 
 newtype ProcessEnvironment = ProcessEnvironment {getProcessEnv :: [(String,String)]} deriving Eq
 
-data FancyAppConfig f = FancyAppConfig {
-  facHost :: f Host,
-  facPort :: f Port
-  }
+data TaskStoreConfig f = TaskStoreConfig {tscDBFilePath :: f FilePath}
+
+data FancyAppConfig f = FancyAppConfig
+                        {
+                          facHost         :: f Host
+                        , facPort         :: f Port
+                        , taskStoreConfig :: f (TaskStoreConfig f)
+                        }
 
 
 data ConfigurationError = ConfigParseError String
@@ -54,11 +60,23 @@ deriving instance Exception ConfigurationError
 
  cfg = ( eitherDecode <$> DBL.readFile ("/tmp/test.json" :: FilePath) :: IO (Either String (FancyAppConfig Identity)))
 -}
+type CompleteTaskStoreConfig = TaskStoreConfig Identity
+deriving instance Generic CompleteTaskStoreConfig
+deriving instance Eq CompleteTaskStoreConfig
+deriving instance Show CompleteTaskStoreConfig
+deriving instance FromJSON CompleteTaskStoreConfig
+
 type CompleteAppConfig = FancyAppConfig Identity
 deriving instance Generic CompleteAppConfig
 deriving instance Eq CompleteAppConfig
 deriving instance Show CompleteAppConfig
 deriving instance FromJSON CompleteAppConfig
+
+type PartialTaskStoreConfig = TaskStoreConfig Maybe
+deriving instance Generic PartialTaskStoreConfig
+deriving instance Eq PartialTaskStoreConfig
+deriving instance Show PartialTaskStoreConfig
+deriving instance FromJSON PartialTaskStoreConfig
 
 type PartialAppConfig = FancyAppConfig Maybe
 deriving instance Generic PartialAppConfig
@@ -71,6 +89,9 @@ defaultHost = "localhost"
 
 defaultPort :: Port
 defaultPort = 5000
+
+defaultTaskStoreFilePath :: FilePath
+defaultTaskStoreFilePath = ":memory:"
 
 class (FromJSON cfg) => FromJSONFile cfg where
   fromJSONFile :: FP.FilePath -> IO (Either ConfigurationError cfg)
@@ -101,9 +122,19 @@ instance FromTOMLFile PartialAppConfig where
 class FromENV cfg where
   fromEnv :: ProcessEnvironment -> cfg
 
+instance FromENV PartialTaskStoreConfig where
+  fromEnv pEnv = TaskStoreConfig {tscDBFilePath = prop "TASK_STORE_FILE_PATH"}
+    where
+      env :: [(String,String)]
+      env = getProcessEnv pEnv
+
+      prop :: String -> Maybe String
+      prop = flip lookup env
+
 instance FromENV PartialAppConfig where
-  fromEnv pEnv = FancyAppConfig { facHost = prop "host",
-                                  facPort = join $ readMaybe <$> prop "port"
+  fromEnv pEnv = FancyAppConfig { facHost = prop "host"
+                                , facPort = join $ readMaybe <$> prop "port"
+                                , taskStoreConfig = Just $ fromEnv pEnv
                                 }
                  where
                    env :: [(String,String)]
@@ -112,29 +143,58 @@ instance FromENV PartialAppConfig where
                    prop :: String -> Maybe String
                    prop = flip lookup env
 
+-- | The class of configurations that can absorb partials of themselves to maintain a whole
+class AbsorbPartial complete partial where
+  absorbPartial :: complete -> partial -> complete
+
+instance AbsorbPartial CompleteTaskStoreConfig PartialTaskStoreConfig where
+  absorbPartial :: CompleteTaskStoreConfig -> PartialTaskStoreConfig -> CompleteTaskStoreConfig
+  absorbPartial c p = TaskStoreConfig {tscDBFilePath = maybe (tscDBFilePath c) Identity (tscDBFilePath p)}
+
+instance AbsorbPartial CompleteAppConfig PartialAppConfig where
+  absorbPartial :: CompleteAppConfig -> PartialAppConfig -> CompleteAppConfig
+  absorbPartial c p = FancyAppConfig { facHost = maybe (facHost c) Identity (facHost p)
+                                     , facPort = maybe (facPort c) Identity (facPort p)
+                                     , taskStoreConfig = Identity $ absorbPartial tsc maybeTsc
+                                     }
+    where
+      tsc = runIdentity $ taskStoreConfig c
+      maybeTsc = maybe mempty id $ taskStoreConfig p
+
+instance Semigroup CompleteTaskStoreConfig where
+  a <> b = b
 
 instance Semigroup CompleteAppConfig where
   a <> b = b
 
+instance Monoid CompleteTaskStoreConfig where
+  mempty = TaskStoreConfig (Identity defaultTaskStoreFilePath)
+
+
 instance Monoid CompleteAppConfig where
-  mempty = FancyAppConfig (Identity defaultHost) (Identity defaultPort)
+  mempty = FancyAppConfig (Identity defaultHost) (Identity defaultPort) (Identity mempty)
 
 -- | value from b overrides
+instance Semigroup PartialTaskStoreConfig where
+  a <> b = TaskStoreConfig {tscDBFilePath = resolveMaybes tscDBFilePath}
+    where
+      resolveMaybes :: (PartialTaskStoreConfig -> Maybe a) -> Maybe a
+      resolveMaybes getter = getter b <|> getter a
+
 instance Semigroup PartialAppConfig where
   a <> b = FancyAppConfig { facHost = resolveMaybes facHost
                           , facPort = resolveMaybes facPort
+                          , taskStoreConfig = resolveMaybes taskStoreConfig
                           }
            where
              resolveMaybes :: (PartialAppConfig -> Maybe c) -> Maybe c
              resolveMaybes getter = getter b <|> getter a
 
-instance Monoid PartialAppConfig where
-  mempty = FancyAppConfig Nothing Nothing
+instance Monoid PartialTaskStoreConfig where
+  mempty = TaskStoreConfig Nothing
 
-mergeInPartial :: CompleteAppConfig -> PartialAppConfig -> CompleteAppConfig
-mergeInPartial c p = FancyAppConfig { facHost = fromMaybe (facHost c) (Identity <$> facHost p),
-                                      facPort = fromMaybe (facPort c) (Identity <$> facPort p)
-                                    }
+instance Monoid PartialAppConfig where
+  mempty = FancyAppConfig Nothing Nothing Nothing
 
 rightOrThrow :: Exception a => Either a b -> IO b
 rightOrThrow e = case e of
@@ -142,7 +202,7 @@ rightOrThrow e = case e of
                    (Right v)  -> return v
 
 buildConfigWithDefault :: CompleteAppConfig -> [PartialAppConfig] -> CompleteAppConfig
-buildConfigWithDefault orig partials = orig `mergeInPartial` combinedPartials
+buildConfigWithDefault orig partials = orig `absorbPartial` combinedPartials
   where
     combinedPartials :: PartialAppConfig
     combinedPartials = Prelude.foldl (<>) (mempty :: PartialAppConfig) partials
@@ -178,11 +238,11 @@ makeAppConfig maybeStrPath env = try generateConfig
     getFileConfig :: FCOS.FilePath -> IO (Either ConfigurationError PartialAppConfig)
     getFileConfig = if isJSONFile then fromJSONFile else fromTOMLFile
 
-    fullySpecifiedPartialCfg :: CompleteAppConfig
-    fullySpecifiedPartialCfg = mergeInPartial mempty mempty
+    defaultCfg :: CompleteAppConfig
+    defaultCfg = mempty
 
     buildFromEnv :: IO CompleteAppConfig
-    buildFromEnv = pure $ mergeInPartial fullySpecifiedPartialCfg envCfg
+    buildFromEnv = pure $ absorbPartial defaultCfg envCfg
 
     generateConfig :: IO CompleteAppConfig
     generateConfig = maybe buildFromEnv buildFromPathAndEnv maybePath
