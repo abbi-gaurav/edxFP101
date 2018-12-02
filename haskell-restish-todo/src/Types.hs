@@ -10,11 +10,18 @@
 
 module Types where
 
-import           Data.Either           (isRight)
-import           Data.Functor.Identity (Identity (..))
-import           Data.Maybe            (fromJust, isJust)
-import qualified Data.Text             as DT
-import           Data.UUID             (UUID)
+import           Config
+import           Control.Exception                (Exception,
+                                                   SomeException (..), catch,
+                                                   throw)
+import           Data.Either                      (isRight)
+import           Data.Functor.Identity            (Identity (..))
+import           Data.Int                         (Int64)
+import           Data.Maybe                       (fromJust, isJust)
+import qualified Data.Text                        as DT
+import           Data.UUID                        (UUID, fromText, toText)
+import           Database.SQLite.Simple           (Connection)
+import           Database.SQLite.Simple.FromField
 
 data Finished = FinishedTask deriving (Eq, Read, Show)
 data InProgress = InProgressTask deriving (Eq, Read, Show)
@@ -28,7 +35,10 @@ type Complete f = f Identity
 type Partial f = f Maybe
 
 newtype TaskName = TaskName {getTName :: DT.Text} deriving (Eq, Show)
+deriving instance FromField TaskName
+
 newtype TaskDesc = TaskDesc {getTDesc :: DT.Text} deriving (Eq, Show)
+deriving instance FromField TaskDesc
 
 data Task f state = Task { tName        :: f TaskName
                          , tDescription :: f TaskDesc
@@ -64,7 +74,17 @@ data ValidationError = InvalidField FieldName
 
 type ValidationCheck t = t -> Maybe ValidationError
 
-data Validated t = Validated t
+newtype Validated t = Validated {getVaidatedObj :: t}
+
+newtype TaskID = TaskID { getTaskID :: DT.Text } deriving (Eq, Read, Show)
+
+data TaskStoreError = NoSuchIdError TaskID
+                    | UnexpectedError DT.Text
+                    | Disconnected DT.Text deriving (Eq, Read, Show)
+
+data WithID a where
+  UUIDID :: UUID -> a -> WithID a
+  Int64ID :: Int64 -> a -> WithID a
 
 class Validatable t where
   isValid :: t -> Bool
@@ -96,6 +116,9 @@ fsTaskName = DT.strip . getTName . runIdentity . tName
 fsTaskDesc :: FullySpecifiedTask state -> DT.Text
 fsTaskDesc = DT.strip . getTDesc . runIdentity . tDescription
 
+fsTaskState :: FullySpecifiedTask TaskState -> TaskState
+fsTaskState = runIdentity . tState
+
 instance Validatable (FullySpecifiedTask state) where
   validationChecks = [checkName, checkDescription]
     where
@@ -124,28 +147,3 @@ instance Validatable (PartialTask state) where
       checkDescription :: (PartialTask state) -> Maybe ValidationError
       --it becomes a partial fn until '.'
       checkDescription = maybe (Just (MissingField taskDescField)) (notEmptyIfPresent taskDescField) . psTaskDesc
-
-
------------------
--- Components --
------------------
-
-class Component c where
-  start :: c -> IO ()
-  stop :: c -> IO ()
-
-newtype TaskID = TaskID { getTaskID :: DT.Text } deriving (Eq, Read, Show)
-
-data TaskStoreError = NoSuchIdError TaskID | UnexpectedError DT.Text deriving (Eq, Read, Show)
-
-data WithID a where
-  UUIDID :: UUID -> a -> WithID a
-  IntID :: Int -> a -> WithID a
-
-class Component c => TaskStore c where
-  persistTask :: c -> Validated (FullySpecifiedTask state) -> Either TaskStoreError (WithID (FullySpecifiedTask state))
-  completeTask :: c -> TaskID -> Either TaskStoreError CompletedTask
-  getTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
-  updateTask :: c -> TaskID -> PartialTask state -> Either TaskStoreError (FullySpecifiedTask state)
-  deletTask :: c -> TaskID -> Either TaskStoreError (FullySpecifiedTask state)
-
