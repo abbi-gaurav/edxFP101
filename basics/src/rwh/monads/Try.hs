@@ -28,6 +28,7 @@ divTry a b = if b == 0
 
 evalTry :: Expr -> Try Int
 evalTry (Lit a)   = Return a
-evalTry (Div a b) = (evalTry a) >>= \a' ->
-  (evalTry b) >>= \b' ->
+evalTry (Div a b) = do
+  a' <- (evalTry a)
+  b' <- (evalTry b)
   divTry a' b'
