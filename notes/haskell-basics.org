@@ -20,6 +20,9 @@
 ** List : same type arbitrary length
 ** Tuple : different types definite length
 ** curried functions
+#+BEGIN_SRC haskell
+
+#+END_SRC
 ** polymorphic functions
 * week 3: Defining functions
 ** conditional expressions vs conditional statements
@@ -164,3 +167,7 @@ f.g = \x -> f (g x)
 - pass the resource to a compute
 - *always* release the resource no matter what
 - if there is an error, rethrow the error to the application
+* recursion
+** non-tail
+** tail
+- can be captured by ~foldl~

@@ -1,0 +1,20 @@
+* composition
+- ~g . f~ : g after f
+- right to left
+- mathematics and haskell
+- properties
+  1. *associativity* ~h . (g . f) = (h . g) . f = h . g . f~
+  2. *identity*      ~f.idA = f and idB . f = f~
+* Types
+- is a set of values
+- finite   : Bool
+- infinite : String
+- *category of Set*
+  - objects are sets
+  - morphisms are functions
+- *bottom*
+  - non-terminating computation
+- *denotational semantics*
+  - every programming construct is given its mathematical interpretation.
+  - to prove property of a program
+  - just prove mathematical theorem
