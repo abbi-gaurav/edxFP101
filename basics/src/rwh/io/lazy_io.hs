@@ -8,8 +8,12 @@ lineStream h = hGetContents h >>= return . lines
 sequence_ :: [IO()] -> IO ()
 sequence_ = foldr (>>) (return ())
 
+--forM_ :: (Monad m, Foldable t) => t a -> (a -> m b) -> m ()
+--mapM_ :: (Monad m, Foldable t) => (a -> m b) -> t a -> m ()
 main = do
   h <- openFile "x.txt" ReadMode
   lines' <- lineStream h
-  mapM_ putStrLn lines' --sequence_ (map putStrLn lines')
+  forM_ lines' $ \line -> do
+    let reversed = reverse line
+    putStrLn reversed
   hClose h
