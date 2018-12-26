@@ -62,6 +62,8 @@ library:
     - src/rwh/hdbc/
     - src/rwh/web-client
     - src/monoids/
+    - src/hdp/monads/
+    - src/hdp/io/
 
 executables:
   pods-exe:
