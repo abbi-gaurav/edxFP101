@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2f4031a331894f9f5ad6b3ba05c3177ed8ecdcc7888367d5c95cab2fc3a80144
+-- hash: 9ad30f6f0f48b01172696283124fffbd5d216f0e3753b523ef69792c9f9e7bd0
 
 name:           basics
 version:        0.1.0.0
@@ -50,6 +50,7 @@ library
       src/monoids/
       src/hdp/monads/
       src/hdp/io/
+      src/pipes/
   build-depends:
       HDBC
     , HDBC-sqlite3 >=2.3.3.1
@@ -66,6 +67,7 @@ library
     , network
     , network-uri
     , parsec
+    , pipes
     , random
     , regex-posix >=0.95.2
     , time
@@ -192,6 +194,7 @@ executable pods-exe
     , network
     , network-uri
     , parsec
+    , pipes
     , random
     , regex-posix >=0.95.2
     , time
@@ -221,6 +224,7 @@ test-suite basics-test
     , network
     , network-uri
     , parsec
+    , pipes
     , random
     , regex-posix >=0.95.2
     , time

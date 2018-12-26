@@ -35,6 +35,7 @@ dependencies:
 - network-uri
 - parsec
 - QuickCheck
+- pipes
 - random
 - regex-posix >= 0.95.2
 - time
@@ -64,6 +65,7 @@ library:
     - src/monoids/
     - src/hdp/monads/
     - src/hdp/io/
+    - src/pipes/
 
 executables:
   pods-exe:

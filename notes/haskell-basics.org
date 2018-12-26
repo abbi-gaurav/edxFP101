@@ -171,3 +171,13 @@ f.g = \x -> f (g x)
 ** non-tail
 ** tail
 - can be captured by ~foldl~
+* pipes
+** communicate
+- ~yield~ : send output data
+- ~await~ : receive input data
+** components
+- ~Producers~ : only yield
+- ~Consumers~ : only await
+- ~Pipes~     : can yield and await
+- ~Effects~   : neither yield nor await
+  - done connecting things when you get an Effect
