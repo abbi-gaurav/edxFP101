@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c715c95fea42398f01862e6119f0bd27463d7ddd2eb23522eaefb7c3032271d4
+-- hash: 2f4031a331894f9f5ad6b3ba05c3177ed8ecdcc7888367d5c95cab2fc3a80144
 
 name:           basics
 version:        0.1.0.0
@@ -48,6 +48,8 @@ library
       src/rwh/hdbc/
       src/rwh/web-client
       src/monoids/
+      src/hdp/monads/
+      src/hdp/io/
   build-depends:
       HDBC
     , HDBC-sqlite3 >=2.3.3.1
@@ -158,6 +160,7 @@ library
       PodParser
       PodTypes
       RandomAccess
+      Try
   other-modules:
       Paths_basics
   default-language: Haskell2010
