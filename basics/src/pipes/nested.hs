@@ -13,7 +13,16 @@ loop :: Producer String IO ()
 loop = for P.stdinLn triple
 
 main :: IO ()
-main = runEffect $ for loop (lift . putStrLn)
+--main = runEffect $ for loop (lift . putStrLn)
+main = runEffect $ for (for P.stdinLn triple) (lift . putStrLn)
+-- (f ~> g) x = for (f x) g
+-- f = for P.stdinln ; x = triple; g = lift.putstrln
+--main = runEffect $ for P.stdinLn (triple ~> lift.putStrLn)
+
+
+-- laws
+-- Associativity
+-- (f ~> g) ~> h = f ~> (g ~> h)
 
 -- s :: Monad m =>      Producer a m ()  -- i.e. 'P.stdinLn'
 -- f :: Monad m => a -> Producer b m ()  -- i.e. 'triple'
