@@ -39,5 +39,10 @@ chunkIter = Iter (go "")
 
 main = do
   h <- openFile "x.txt" ReadMode
-  chunk1 <- B.hGet h 50
-  print $ runIter chunkIter chunk1
+
+  chunk1 <- B.hGet h 25
+  let (NeedChunk iter1) = runIter chunkIter chunk1
+
+  chunk2 <- B.hGet h 25
+  let (HaveLine line residual) = runIter iter1 chunk2
+  putStrLn line
