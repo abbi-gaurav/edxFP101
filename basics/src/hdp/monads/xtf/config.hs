@@ -63,3 +63,39 @@ main2 = do
   where
     doDoubleDiscount :: App String
     doDoubleDiscount = discountWR 100 >>= discountWR >>= displayWR
+
+{-|
+Reader
+-----
+Writer
+-----
+IO
+-----
+-}
+
+newtype AppIO a = AppIO {runAppIO :: ReaderT Config (WriterT String IO ) a}
+  deriving (Monad, Applicative, Functor, MonadReader Config, MonadWriter String, MonadIO)
+
+discountWRIO :: Float -> AppIO Float
+discountWRIO amt = do
+  liftIO $ putStrLn "we are doing IO in discountWRIO"
+  discountRate' <- asks discountRate
+  let discounted = amt * (1 - discountRate' / 100)
+  tell $ " > Discount " ++ (show amt) ++ " = " ++ (show discounted)
+  return discounted
+
+displayWRIO :: Float -> AppIO String
+displayWRIO amt = do
+  liftIO $ putStrLn "More IO!"
+  currencySym' <- asks currencySystem
+  tell " > Displaying..."
+  return (currencySym' ++ " " ++ (show amt))
+
+doAppIO :: AppIO a -> IO (a, String)
+doAppIO app = runWriterT (runReaderT (runAppIO app) appCfg)
+
+main3 = do
+  (value, writerS) <- doAppIO doDoubleDiscount
+  putStrLn $ show ((,) value writerS)
+  where
+    doDoubleDiscount = discountWRIO 100 >>= discountWRIO >>= displayWRIO
