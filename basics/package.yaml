@@ -64,6 +64,7 @@ library:
     - src/rwh/web-client
     - src/monoids/
     - src/hdp/monads/
+    - src/hdp/monads/xtf/
     - src/hdp/io/
     - src/pipes/
 

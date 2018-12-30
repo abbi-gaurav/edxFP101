@@ -67,7 +67,6 @@ const x = \ _ -> x
 **** [(x,y)| x <- [1..3], y <- [x..5]]
 *** guards are filters
 **** [x | x <- [1..10], even x]
-**** 
 * week 5: HOF
 ** usefulness
 *** common idioms  can be abstracted out
@@ -90,14 +89,6 @@ f.g = \x -> f (g x)
 *** f.g = f after g
 * week 7 Functional Parsers and Monads
 ** parser : a program that analyzes a piece of text to determine its syntactic structure
-** functors
-- it is a computational context
-#+BEGIN_SRC haskell
-  fmap :: (a -> b) -> f a -> f b
-  -- functor laws
-  fmap id == id
-  fmap (f . g) == fmap f . fmap g
-#+END_SRC
 * week 9 Declaring Types and classes
 ** alias
 *** type String = [Char]
@@ -147,20 +138,6 @@ f.g = \x -> f (g x)
 - Map is strict in its keys, but nonstrict in its values.
 - In other words, the spine, or structure, of the map is always kept up-to-date, but values in the map aren’t evaluated unless we force them to be.
 - ~union~ is left-biased
-* Applicative
-- ~pure :: a -> ma~
-- ~<*> f (a->b) -> fa -> fb~ 
-#+BEGIN_SRC haskell
-*ParsecTutorial> :t (,) <$> Just 1
-(,) <$> Just 1 :: Num a => Maybe (b -> (a, b))
-
-*ParsecTutorial> :t (,) <$> Just 1 <*> Just 2
-(,) <$> Just 1 <*> Just 2 :: (Num a2, Num a1) => Maybe (a1, a2)
-#+END_SRC
-* Monad
-- a type constructor ~m~
-- a chaining function ~ma -> (a -> mb) -> mb~
-- a injector ~a -> ma~
 * Parallel and concurrent programming
 ** ~modifyVar pattern~
 - acquire a resource
@@ -181,3 +158,65 @@ f.g = \x -> f (g x)
 - ~Pipes~     : can yield and await
 - ~Effects~   : neither yield nor await
   - done connecting things when you get an Effect
+* Functor
+- how a single paramter function can be applied to a type class (Functor)
+#+BEGIN_SRC haskell
+-- composistion
+fmap (f . g) == fmap f . fmap g
+
+-- identity
+fmap id == id
+
+#+END_SRC
+
+- ~(->) r~
+  - The function type ~r ->a~ can be written as ~(->) r a~ similiar to ~2 + 3 == (+) 2 3~
+  - ~(->)~ is a type constructor that takes ~r~ and ~a~
+  - To make it ~functor~ we can partially apply ~(->) r~ which is ~(r ->)~
+  - to make function as functor
+#+BEGIN_SRC haskell
+  instance Functor ((->) r) where
+    fmap f g = (\x -> f (g x))
+    -- fmap = (.) this is function composition
+
+    -- fmap :: (a -> b) -> f a -> f b.
+    -- fmap :: (a -> b) ((->) r a) -> ((-> r) b) == (a -> b) -> (r -> a) (r -> b)
+#+END_SRC
+
+- **lift**
+  - =fmap= takes a function,lifts it so that it can be applied on a functor
+* Applicative Functor
+- A type class which enables us to raise a function to act on multiple Functor values
+- when we have a function that takes multiple values
+- are closed under composition
+#+BEGIN_SRC haskell
+  class (Functor f) => Applicative f where
+    pure :: a -> f a
+    (<*>) :: f(a->b) -> f a -> f b
+#+END_SRC
+
+- functions are applicative functors
+#+BEGIN_SRC haskell
+  instance Applicative ((->) r) where
+    pure x = (\_ -> x)        --pure :: a -> (r -> a)
+    f <*> g = \x -> f x (g x) -- let f = (+) <$> (*2) <*> (+10) ; f 3 = 19
+#+END_SRC
+
+* Monad
+- a type constructor ~m~
+- a chaining function ~ma -> (a -> mb) -> mb~
+- a injector ~a -> ma~
+- bind in a way that includes an "accumulator".
+  - This contrasts with applicatives, which have no accumulator and hence no communication between arguments.
+- not closed under composition
+
+- =(->) r= is a monad
+#+BEGIN_SRC haskell
+  instance Monad ((->) r) where
+    return x = \_ -> x           -- return :: a -> (r -> a)
+    h >>= f = \w -> f (h w) w
+#+END_SRC 
+
+* Reader
+- reader monad allows us to treat functions as values with a context. 
+* Monad transformers
