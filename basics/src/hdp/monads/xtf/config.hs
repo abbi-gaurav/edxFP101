@@ -37,14 +37,16 @@ Reader
 Writer
 -----
 -}
-discountWR :: Float -> ReaderT Config (Writer String) Float
+type App = ReaderT Config (Writer String)
+
+discountWR :: Float -> App Float
 discountWR amt = do
   discountRate' <- asks discountRate
   let discounted = amt * (1 - discountRate' / 100)
   tell $ " > Discount " ++ (show amt) ++ " = " ++ (show discounted)
   return discounted
 
-displayWR :: Float -> ReaderT Config (Writer String) String
+displayWR :: Float -> App String
 displayWR amt = do
   currencySym' <- asks currencySystem
   tell " > Displaying..."
@@ -54,5 +56,5 @@ main2 :: IO ()
 main2 = do
   print $ runWriter (runReaderT doDoubleDiscount appCfg)
   where
-    doDoubleDiscount :: ReaderT Config (Writer String) String
+    doDoubleDiscount :: App String
     doDoubleDiscount = discountWR 100 >>= discountWR >>= displayWR
