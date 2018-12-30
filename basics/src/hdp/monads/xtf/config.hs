@@ -31,3 +31,28 @@ main = do
     display second
 
 
+{-|
+Reader
+------
+Writer
+-----
+-}
+discountWR :: Float -> ReaderT Config (Writer String) Float
+discountWR amt = do
+  discountRate' <- asks discountRate
+  let discounted = amt * (1 - discountRate' / 100)
+  tell $ " > Discount " ++ (show amt) ++ " = " ++ (show discounted)
+  return discounted
+
+displayWR :: Float -> ReaderT Config (Writer String) String
+displayWR amt = do
+  currencySym' <- asks currencySystem
+  tell " > Displaying..."
+  return (currencySym' ++ " " ++ (show amt))
+
+main2 :: IO ()
+main2 = do
+  print $ runWriter (runReaderT doDoubleDiscount appCfg)
+  where
+    doDoubleDiscount :: ReaderT Config (Writer String) String
+    doDoubleDiscount = discountWR 100 >>= discountWR >>= displayWR
