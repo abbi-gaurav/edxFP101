@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Config where
 
 import           Control.Monad.Identity
@@ -37,7 +38,8 @@ Reader
 Writer
 -----
 -}
-type App = ReaderT Config (Writer String)
+newtype App a = App {runApp :: ReaderT Config (Writer String) a}
+  deriving (Monad, Applicative, Functor, MonadReader Config, MonadWriter String )
 
 discountWR :: Float -> App Float
 discountWR amt = do
@@ -52,9 +54,12 @@ displayWR amt = do
   tell " > Displaying..."
   return (currencySym' ++ " " ++ (show amt))
 
+doApp :: App a -> (a, String)
+doApp app = runWriter (runReaderT (runApp app) appCfg)
+
 main2 :: IO ()
 main2 = do
-  print $ runWriter (runReaderT doDoubleDiscount appCfg)
+  print $ doApp doDoubleDiscount
   where
     doDoubleDiscount :: App String
     doDoubleDiscount = discountWR 100 >>= discountWR >>= displayWR
