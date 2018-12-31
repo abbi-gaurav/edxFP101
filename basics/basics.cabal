@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ec6ec6e73a5b74a2a611538930068b0a03bf54d701b553686168a9544a1d3fd1
+-- hash: 45b9f377cf13224c4c7a9c46576472d26538163466de9a5fc5c1ca3a80c14a01
 
 name:           basics
 version:        0.1.0.0
@@ -51,6 +51,7 @@ library
       src/hdp/monads/
       src/hdp/monads/xtf/
       src/hdp/io/
+      src/hdp/monads/arrows/
       src/pipes/
   build-depends:
       HDBC

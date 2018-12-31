@@ -66,6 +66,7 @@ library:
     - src/hdp/monads/
     - src/hdp/monads/xtf/
     - src/hdp/io/
+    - src/hdp/monads/arrows/
     - src/pipes/
 
 executables:
