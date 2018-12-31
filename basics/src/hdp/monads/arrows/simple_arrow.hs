@@ -47,6 +47,14 @@ main2 = do
                                  . IOArrow readFile --IOArrow Filepath String
   runIOArrow f "x.txt"
 
+useKleisli :: IO ()
+useKleisli = do
+  let f = Kleisli print
+          . arr length
+          . arr words
+          . Kleisli readFile
+  runKleisli f "x.txt"
+
 firstAndSecond :: IO ()
 firstAndSecond = do
   let f = IOArrow print

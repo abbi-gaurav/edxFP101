@@ -219,7 +219,8 @@ fmap id == id
 
 * Reader
 - reader monad allows us to treat functions as values with a context. 
+* Monad transformers
 * Arrows
 - compose pure and monadic functions together in a uniform simple fashion.
 - abstract away the knowledge of monads from the user
-* Monad transformers
+- useful in parsers, streaming applications, and as an approach to functional reactive programming.
