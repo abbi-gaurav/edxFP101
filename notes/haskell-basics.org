@@ -1,105 +1,104 @@
-* week 1
-** lect 0
-*** FP is a style of programming in which expressions are more important than statements
-*** we use expressions to compose and create bigger expressions
-*** no mutation of a global state
-*** lambda calculus by alonzo church
-** lect 1
-*** ghci
-* week 2 Types and classes
-** Types: collection of related values
-** Type errors
-** language can have
-*** static typing: haskell
-*** dynamic typing: ruby
-*** no typing: javascript
-** type inference
-** basic types
-*** Int : fixed precision
-*** Integer: arbitrary precision
-** List : same type arbitrary length
-** Tuple : different types definite length
-** curried functions
+* What is FP
+- FP is a style of programming in which expressions are more important than statements
+- we use expressions to compose and create bigger expressions
+- no mutation of a global state
+- lambda calculus by alonzo church
+* Types and classes
+- Types: collection of related values
+- Type errors
+- type inference
+- language can have
+  - static typing: haskell
+  - dynamic typing: ruby
+  - no typing: javascript
+- basic types
+  - Int : fixed precision
+  - Integer: arbitrary precision
+- List : same type arbitrary length
+- Tuple : different types definite length
+- /polymorphic functions/
+* Defining functions
+- conditional expressions vs conditional statements
+  - haskell has conditional expressions
+  - need to have both if and else part like ternary expressions
+  - java has conditional statements
+- guarded equations
+  - starts with an expression
+- pattern matching
+  - top -> botoom and left -> right
+  - cannot repeat variables
+  - *x:xs* must be (x:xs) because /application/ has priority over /:/
+- lamdba expressions
+  - are expressions that denote functions
+  - makes intent more clear
 #+BEGIN_SRC haskell
-
+  -- e.g without lambda
+  const :: a -> b -> a
+  const x _ = x
+   - with lamddas
+  const :: a -> (b -> a)
+  const x = \ _ -> x
 #+END_SRC
-** polymorphic functions
-* week 3: Defining functions
-** conditional expressions vs conditional statements
-*** haskell has conditional expressions
-**** need to have both if and else part like ternary expressions
-*** java has conditional statements
-** guarded equations
-*** starts with an expression
-** pattern matching
-*** top -> botoom and left -> right
-*** cannot repeat variables
-*** x:xs must be (x:xs) because application has priority over :
-** lamdba expressions
-*** are expressions that denote functions
-*** makes intent more clear
-*** e.g without lambda
-const :: a -> b -> a
-const x _ = x
-*** with lamddas
-const :: a -> (b -> a)
-const x = \ _ -> x
-** sections
-*** converts an infix operator to a curried function
-*** e.g 1+2 =====> (+) 1 2
-*** makes possible
-**** (1+) 2
-**** (+2) 1
-**** 1 + 2
-*** in general if ø is a binary operator, the
-**** a ø b, (a ø) b and (ø b) a are possible
-* week 4: List comprehensions
-** helps write functions that manipulate lists
-** e.g. [x^2 | x <- [1..5]]
-*** x <- [1..5] is called generator
-*** comprehension can have multiple generators
-**** [(x,y) | x <- [1..3], y <-[4..5]],
-***** y is the inner loop
-***** x is outer loop
-***** this depends upon order of generators but not the expression
-*** dependent generators
-**** later generators can use the variables introduced by earlier generators
-**** [(x,y)| x <- [1..3], y <- [x..5]]
-*** guards are filters
-**** [x | x <- [1..10], even x]
-* week 5: HOF
-** usefulness
-*** common idioms  can be abstracted out
-*** easy to define a DSL
-*** algebaric properties of functions can be used to reason a about the behavior
-** foldr is a homomorphism over list, i.e. structure of list is maintained
-*** e.g. sum [1,2,3]
-foldr (+) 0 [1,2,3]
-foldr (+) 0 (1:(2:(3:[])))
-replace each : with + and [] with 0
-(1+(2+(3+0)))
-*** is similiar to visitor pattern
-*** usefulness
-**** function properties can be proved using algebaric properties of foldr
-**** fusion and banana split
-**** advanced optimizations can be done
-** functional composition
-(.) :: (b ->c) -> (a -> b) -> (a -> c)
-f.g = \x -> f (g x)
-*** f.g = f after g
-* week 7 Functional Parsers and Monads
-** parser : a program that analyzes a piece of text to determine its syntactic structure
-* week 9 Declaring Types and classes
-** alias
-*** type String = [Char]
-*** type Pair a = (a,a)
-*** *can be nested, but not recursive*
-** Types
-*** data Bool = True|False
-**** Bool is siiliar to an abstract class or trait
-**** True or False are sub-types classes, they are called data constructors
-**** Type and constructors must begin with upper case
-* week 11 Lazy evaluation
+- sections
+  - *converts an infix operator to a curried function*
+#+BEGIN_SRC haskell
+  1+2 == (+) 1 2
+  (1+) 2
+  (+2) 1
+  1 + 2
+#+END_SRC
+- in general if ø is a binary operator, the
+- a ø b, (a ø) b and (ø b) a are possible
+* List comprehensions
+- helps write functions that manipulate lists
+  - ~[x^2 | x <- [1..5]]~
+  - /x <- [1..5]/ is called generator
+  - comprehension can have multiple generators
+    - ~[(x,y) | x <- [1..3], y <-[4..5]],~
+    - y is the inner loop
+    - x is outer loop
+    - this depends upon order of generators but not the expression
+  - dependent generators
+    - later generators can use the variables introduced by earlier generators
+    - ~[(x,y)| x <- [1..3], y <- [x..5]]~
+  - guards are filters
+    - ~[x | x <- [1..10], even x]~
+* HOF
+- common idioms  can be abstracted out
+- easy to define a DSL
+- algebaric properties of functions can be used to reason a about the behavior
+- foldr is a homomorphism over list, i.e. structure of list is maintained
+#+BEGIN_SRC haskell
+  sum [1,2,3]
+  foldr (+) 0 [1,2,3]
+  foldr (+) 0 (1:(2:(3:[])))
+  -- replace each : with + and [] with 0
+  (1+(2+(3+0)))
+#+END_SRC
+- /is similiar to visitor pattern/
+- usefulness
+  - function properties can be proved using algebaric properties of foldr
+  - fusion and banana split
+  - advanced optimizations can be done
+- functional composition
+#+BEGIN_SRC haskell
+  (.) :: (b ->c) -> (a -> b) -> (a -> c)
+  f . g = \x -> f (g x) --f after g
+#+END_SRC
+
+* Functional Parsers
+- parser : a program that analyzes a piece of text to determine its syntactic structure
+* - Declaring Types and classes
+- *alias*
+  - ~type String = [Char]~
+  - ~type Pair a = (a,a)~
+  - *can be nested, but not recursive*
+- *Types*
+  - data Bool = True|False
+    - Bool is similiar to an abstract class or trait
+    - True or False are sub-types classes, they are called data constructors
+    - Type and constructors must begin with upper case
+* Lazy evaluation
 
  |-------------------+---------------------------------------------------------------+--------------------------------------|
  | *facts            | innermost reduction                                           | outermost reduction*                 |
@@ -109,9 +108,9 @@ f.g = \x -> f (g x)
  | if both terminate | same result                                                   | result                               |
  |-------------------+---------------------------------------------------------------+--------------------------------------|
  |                   | more efficient as comapred to outermost, less number of steps |                                      |
-** sharing of expressions
-*** square (3+4) ====> (p * p), where p --> (3+4) ====> (p * p), where p = 7
-** Lazy evaluation = outermost reduction + sharing
+- sharing of expressions
+  - ~square (3+4) ====> (p * p), where p --> (3+4) ====> (p * p), where p = 7~
+- /Lazy evaluation = outermost reduction + sharing/
 * Type constructors
 - Type constructors take other types as parameters to eventually produce concrete types.
   - e.g ~Either, Maybe~ are type constructors
@@ -224,3 +223,40 @@ fmap id == id
 - compose pure and monadic functions together in a uniform simple fashion.
 - abstract away the knowledge of monads from the user
 - useful in parsers, streaming applications, and as an approach to functional reactive programming.
+* Monoids
+- folding accumulates
+- monoids are the datatype for accumulation
+* Mapping
+#+BEGIN_SRC haskell
+  map   :: (a -> b)   -> [a] -> [b]
+  mapM  :: (a -> m b) -> [a] -> m [b]
+  mapM_ :: (a -> m b) -> [a] -> m ()
+#+END_SRC
+
+* Foldable
+- accumulates the input structure into a single Monoid value, but that single value might be a composite structure.
+#+BEGIN_SRC haskell
+  M.foldM  :: (Monad m, Foldable t) => (b -> a -> m b) -> b -> t a -> m b
+  F.foldrM :: (Monad m, Foldable t) => (a -> b -> m b) -> b -> t a -> m b
+  F.foldlM :: (Monad m, Foldable t) => (b -> a -> m b) -> b -> t a -> m b
+
+#+END_SRC
+* Traversable
+#+begin_src haskell
+  class (Functor f, Foldable t) => Traversable (t :: * -> *) where
+    --Applicative FORM
+    traverse  :: Applicative f  => (a -> f b) -> t a -> f (t b)
+    sequenceA :: Applicative f => t (f a) -> f (t a)
+
+    mapM     :: Monad m => (a -> m b) -> t a -> m (t b)
+    sequence :: Monad m => t (m a) -> m (t a)
+#+end_src
+* Lens
+- deliver function to a part of a structure and retunr the structure
+#+begin_src haskell
+  fmapRoot :: (a -> a) -> Tree a -> Tree a
+  fmapRootIO :: (a -> IO a) -> Tree a -> IO (Tree a)
+  fmapM :: (a -> m a) -> Tree a -> m (Tree a)
+  -- Laarhoven Lens of type
+  type Lens' s a = Functor f' => (a -> f' a) -> s -> f' s
+#+end_src
